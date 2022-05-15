@@ -1,6 +1,6 @@
 # Chess
 
-This is my first big project! I have worked on it alone with almost no help from youtube / other chess tutorials. I learned a lot going thru the project. After many sleepless nights and painful days l was able to complete it! It will certantly not be perfect but this is my first project non the less!
+This is my first big project. I have worked on it alone with almost no help from youtube / other chess tutorials. I learned a lot going thru the project. After many sleepless nights and painful days l was able to complete it! It will certantly not be perfect but this is my first project non the less!
 
 This project was made with JavaFX and Maven.
 
