@@ -1,4 +1,6 @@
-package com.koleff.chess.MediatorAndThreads;
+package com.koleff.chess.unused;
+
+import com.koleff.chess.Pieces.Piece;
 
 /**
  * This class is used to store variables (non-static) and access them in different classes.

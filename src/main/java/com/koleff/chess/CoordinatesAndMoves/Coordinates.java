@@ -22,7 +22,7 @@ public class Coordinates{
     public static char calculateX(double coordinatesX) {
         double coordinates;
 
-        //If called with mouseEvent
+        //If called with MouseEvent
         if (coordinatesX > 8) { //coordinatesX / 100 >= 1
             coordinates = coordinatesX;
         } else {

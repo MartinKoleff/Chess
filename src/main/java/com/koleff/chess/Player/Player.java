@@ -9,7 +9,7 @@ import static com.koleff.chess.Board.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 
 
-public class Player<T extends Piece> {
+public class Player {
     /**
      * Fields
      */
@@ -17,11 +17,12 @@ public class Player<T extends Piece> {
     private Colour playerPiecesColor;
 
     private String playerName;
-    private LinkedHashMap<String, T> playerPieces = new LinkedHashMap<>();
+    private LinkedHashMap<String, Piece> playerPieces = new LinkedHashMap<>();
     public boolean canCastle = false;
     public boolean hasCastled = false;
     public boolean isCheckmated = false;
     public boolean isStalemated = false;
+    public boolean isInCheck = false;
 
     /**
      * Functions
@@ -38,15 +39,15 @@ public class Player<T extends Piece> {
      * Adds the Pieces from the players color into List
      */
     public void addPiece(Piece piece) {
-        playerPieces.put(piece.getCoordinates(), (T) piece);
+        playerPieces.put(piece.getCoordinates(), piece);
     }
 
     public void removePiece(Piece piece) {
         playerPieces.remove(piece.getCoordinates(), piece);
     }
 
-    public List<T> getPieces() {
-        return ((LinkedHashMap<String, T>)chessPiecesMapMediator.getData()).values().stream()
+    public List<Piece> getPieces() {
+        return moves.getChessPiecesMap().values().stream()
                 .filter(e -> e.getColor().equals(playerPiecesColor)) //.filter(e -> ((T) e).getColor().equals(playerPiecesColor))
                 .toList();
     }
@@ -57,7 +58,7 @@ public class Player<T extends Piece> {
      */
 
     public String getKingCoordinates() {
-        String kingCoordinates = ((LinkedHashMap<String, T>) chessPiecesMapMediator.getData()).entrySet().stream()
+        String kingCoordinates = moves.getChessPiecesMap().entrySet().stream()
                 .filter(e -> e.getValue().getColor().equals(this.getPlayerPiecesColor()) //currentPlayer
                         && e.getValue() instanceof King)
                 .map(Map.Entry::getKey)
@@ -72,7 +73,7 @@ public class Player<T extends Piece> {
      * Returns the King of the player
      */
     public King getPlayerKing() {
-        return (King) ((LinkedHashMap<String, T>)chessPiecesMapMediator.getData()).get(getKingCoordinates());
+        return (King) moves.getChessPiecesMap().get(getKingCoordinates());
     }
 
     /**
@@ -80,22 +81,22 @@ public class Player<T extends Piece> {
      */
     public boolean checkForKingChecks() {
         String kingCoordinates = this.getKingCoordinates();
-        List attackingMovesListTemp = new ArrayList(attackingMovesList);
+        List<String> attackingMovesListTemp = new ArrayList(moves.getAttackingMovesList());
 
         String playerColor = this.getPlayerPiecesColor().toString().charAt(0) + this.getPlayerPiecesColor().toString().substring(1).toLowerCase();
-        if (moves.calculateAttackingMoves(getNextTurnPlayer(this).getPlayerPiecesColor()).contains(kingCoordinates)) {
+        if (moves.calculateAttackingMoves(getNextTurnPlayer(this).getPlayerPiecesColor()).contains(kingCoordinates)) { //BUGGING HERE...
             if (!calculatingIfPieceProtectsKing && !isCalculatingKingDiscoveryFromAllyPiece) {
                 System.out.printf("%s's king is in check!\n", playerColor);
                 System.out.println();
             }
-            attackingMovesList = attackingMovesListTemp;
+            moves.setAttackingMovesList(attackingMovesListTemp);
             calculatingIfPieceProtectsKing = false;
             return true;
         }
 //        else if (kingCoordinates.isEmpty()) {
 //            System.out.printf("%s's king is missing...\n", playerColor);
 //        }
-        attackingMovesList = attackingMovesListTemp;
+        moves.setAttackingMovesList(attackingMovesListTemp);
         return false;
     }
 

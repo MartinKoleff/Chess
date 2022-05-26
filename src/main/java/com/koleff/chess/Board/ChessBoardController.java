@@ -1,9 +1,7 @@
 package com.koleff.chess.Board;
 
-import com.koleff.chess.MainMenu.Main;
-import com.koleff.chess.MediatorAndThreads.PawnPromotionRunnable;
-import com.koleff.chess.MediatorAndThreads.PawnPromotionThread;
-import javafx.application.Platform;
+import com.koleff.chess.Threads.PawnPromotionRunnable;
+import com.koleff.chess.Threads.PawnPromotionThread;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -11,13 +9,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import com.koleff.chess.CoordinatesAndMoves.Moves;
-import com.koleff.chess.MediatorAndThreads.Mediator;
 import com.koleff.chess.Pieces.*;
 import com.koleff.chess.Player.Player;
 
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import static com.koleff.chess.Board.Board.paintBoard;
@@ -27,7 +23,7 @@ import static com.koleff.chess.MainMenu.Controller.chessBoardHeight;
 import static com.koleff.chess.MainMenu.Controller.chessBoardWidth;
 
 
-public class ChessBoardController<T extends Piece> implements Initializable {
+public class ChessBoardController implements Initializable {
     /**
      * Fields
      */
@@ -35,27 +31,13 @@ public class ChessBoardController<T extends Piece> implements Initializable {
     protected GridPane gridPane;
     @FXML
     protected BorderPane gameWindow;
-
-    public Map<String, T> chessPiecesMap = new LinkedHashMap(); //<K> String -> Coordinates (example: e4) | <V> Piece -> The Piece that is on the <K> coordinates
-    protected static List<String> legalMovesList = new ArrayList<>(); //String -> coordinates
-    public static List<String> attackingMovesList = new ArrayList<>(); //String -> coordinates
-
-    public T selectedPiece = null;
-    protected static boolean hasSelectedPiece = false;
-
-    public static int cellWidth;
-    protected static int cellHeight;
-    public static Mediator chessPiecesMapMediator;
-    public static Mediator selectedPieceMediator;
+    public static final int cellWidth = chessBoardWidth / 8; //make non-static (give to constructors...)
+    public static final int cellHeight = chessBoardHeight / 8;
 
     public static Player whitePlayer = new Player(Colour.WHITE);
     public static Player blackPlayer = new Player(Colour.BLACK);
     public static Player currentPlayer = whitePlayer;
     public static Player nextTurnPlayer = blackPlayer;
-
-    public static boolean kingIsChecked = false;
-    public static boolean isCalculatingCheckmate = false;
-    public static boolean isCalculatingStalemate = false;
 
     public static Board board;
     public static Moves moves;
@@ -68,12 +50,7 @@ public class ChessBoardController<T extends Piece> implements Initializable {
      * This method is called upon fxml load (before the program loads)
      */
     public void initialize(URL location, ResourceBundle resources) {
-        setCellWidth();
-        setCellHeight();
         gridPane.setAlignment(Pos.CENTER_LEFT);
-
-        chessPiecesMapMediator = new Mediator(chessPiecesMap);
-        selectedPieceMediator = new Mediator(selectedPiece);
 
         paintBoard(gridPane);
 
@@ -87,66 +64,43 @@ public class ChessBoardController<T extends Piece> implements Initializable {
     }
 
     /**
-     * Setters
-     */
-
-    private void setCellHeight() {
-        cellHeight = chessBoardHeight / gridPane.getColumnCount();
-    }
-
-    private void setCellWidth() {
-        cellWidth = chessBoardWidth / gridPane.getRowCount();
-    }
-
-    public void updateChessPiecesMap() {
-        chessPiecesMap = ((LinkedHashMap<String, T>) chessPiecesMapMediator.getData());
-    }
-
-    /**
      * Select logic (Triggered on every mouse press)
      */
     public void selectPiece(MouseEvent mouseEvent) {
         String coordinates = locatePiece(mouseEvent);
-        updateChessPiecesMap();
 
-        //If piece is already selected -> don't reset the legal moves
-        if (hasSelectedPiece) {
-            movePieceByClicking(mouseEvent, selectedPiece);
+        //If piece is already selected -> move
+        if (moves.getSelectedPiece() != null) {
+            movePieceByClicking(mouseEvent, moves.getSelectedPiece());
             return;
         } else {
-            legalMovesList.clear();
+            moves.getLegalMovesList().clear();
         }
 
-        if (!chessPiecesMap.containsKey(coordinates)) {
-            hasSelectedPiece = false;
+        if (!moves.getChessPiecesMap().containsKey(coordinates)) {
+            moves.setSelectedPiece(null);
 
             board.updateBoard();
             System.out.printf("No piece on square %s! Try again.\n", coordinates);
         } else {
-            if (!chessPiecesMap.get(coordinates).getColor().equals(currentPlayer.getPlayerPiecesColor())) { //If piece is the color of the player continue. Otherwise try again
+            if (!moves.getChessPiecesMap().get(coordinates).getColor().equals(currentPlayer.getPlayerPiecesColor())) { //If piece is the color of the player continue. Otherwise, try again
                 System.out.println("You have selected pieces from wrong color! Please try to select piece from your color!\n");
                 return;
             }
 
             //Piece is selected logic...
-            hasSelectedPiece = true;
-
-            T piece = chessPiecesMap.get(coordinates);
-            selectedPiece = piece;
-            selectedPieceMediator.setData(selectedPiece);
+            Piece piece = moves.getChessPiecesMap().get(coordinates);
+            moves.setSelectedPiece(piece);
 
             //Protection of enemy pieces
             moves.calculateProtection(nextTurnPlayer.getPlayerPiecesColor());
 
             moves.calculateAttackingMoves(nextTurnPlayer.getPlayerPiecesColor());
-            selectedPiece.move();
+            moves.getSelectedPiece().move();
 
-            /**Check if selectedPiece is the same after calculations...*/
-
-            //If piece doesn't have moves -> dont have to double click (resets the wait)
-            if (legalMovesList.isEmpty()) {
-                hasSelectedPiece = false;
-                selectedPiece = null;
+            //If piece doesn't have moves -> don't have to double-click / wait for clicking again
+            if (moves.getLegalMovesList().isEmpty()) {
+                moves.setSelectedPiece(null);
             }
         }
     }
@@ -154,17 +108,17 @@ public class ChessBoardController<T extends Piece> implements Initializable {
     /**
      * Move the pieces by clicking on the legal moves.
      */
-    public void movePieceByClicking(MouseEvent mouseEvent, T piece) {
+    public void movePieceByClicking(MouseEvent mouseEvent, Piece piece) {
         String newCoordinates = locatePiece(mouseEvent);
         char newCoordinatesX = newCoordinates.charAt(0);
         int newCoordinatesY = Integer.parseInt(String.valueOf(newCoordinates.charAt(1)));
 
         //Move is legal
-        if (legalMovesList.contains(newCoordinates)) {
+        if (moves.getLegalMovesList().contains(newCoordinates)) {
 
             //Castle
-            if (selectedPiece instanceof King && !currentPlayer.hasCastled && currentPlayer.canCastle && castlingMovesList.contains(newCoordinates)
-                    && !selectedPiece.hasMoved) {
+            if (moves.getSelectedPiece() instanceof King && !currentPlayer.hasCastled && currentPlayer.canCastle && moves.castlingMovesList.contains(newCoordinates)
+                    && !moves.getSelectedPiece().hasMoved) {
                 castle(newCoordinates);
             }
             piece.hasMoved = true;
@@ -172,7 +126,7 @@ public class ChessBoardController<T extends Piece> implements Initializable {
             //En passant setter
             if (piece instanceof Pawn) {
                 if (newCoordinatesY - 2 == piece.getCoordinatesY() || newCoordinatesY + 2 == piece.getCoordinatesY()) {
-                    ((Pawn) piece).setHasDoubleMoved(true);
+                    ((Pawn) piece).hasDoubleMoved = true;
                 }
 
                 //Promotion
@@ -184,13 +138,12 @@ public class ChessBoardController<T extends Piece> implements Initializable {
             }
 
             try {
-                //SHOULD NOT GO IN IF PROMOTING...
-               if(!((Pawn)piece).hasPromoted && piece instanceof Pawn){
+               if(!((Pawn)piece).hasPromoted && piece instanceof Pawn){ //SHOULD NOT GO IN IF PROMOTING...
                     throw new ClassCastException();
                 }
             }catch (ClassCastException e){
-                chessPiecesMap.put(newCoordinates, piece);
-                chessPiecesMap.remove(piece.getCoordinates());
+                moves.getChessPiecesMap().put(newCoordinates, piece);
+                moves.getChessPiecesMap().remove(piece.getCoordinates());
 
                 piece.setCoordinates(newCoordinates);
             }
@@ -200,18 +153,17 @@ public class ChessBoardController<T extends Piece> implements Initializable {
             }
 
             //Has done En Passant
-            if (enPassantCoordinatesList.contains(newCoordinates) && selectedPiece instanceof Pawn) { //newCoordinates.equals(enPassantSquare)
+            if (enPassantCoordinatesList.contains(newCoordinates) && moves.getSelectedPiece() instanceof Pawn) { //newCoordinates.equals(enPassantSquare)
                 enPassantEnemyPawnSquare = enPassantEnemyPawnCoordinatesList.stream()
                         .filter(e -> e.charAt(0) == newCoordinatesX).collect(Collectors.joining());
-                ((Pawn) piece).setHasDoubleMoved(false);
-                chessPiecesMap.remove(enPassantEnemyPawnSquare);
+                ((Pawn) piece).hasDoubleMoved = false;
+                moves.getChessPiecesMap().remove(enPassantEnemyPawnSquare);
                 enPassantSquare = null;
             }
 
             //If the enemy king is in check
             if (nextTurnPlayer.checkForKingChecks()) {
-                kingIsChecked = true;
-
+                    nextTurnPlayer.isInCheck = true;
 //                moves.calculateProtection(currentPlayer.getPlayerPiecesColor());
 
                 //Checkmate
@@ -223,7 +175,7 @@ public class ChessBoardController<T extends Piece> implements Initializable {
                     System.out.printf("%s's king is checkmated.\n", nextTurnPlayer.getPlayerPiecesColor());
                 }
             } else {
-                kingIsChecked = false;
+                nextTurnPlayer.isInCheck = false;
 
                 //Stalemate
                 checkForStalemate();
@@ -257,12 +209,11 @@ public class ChessBoardController<T extends Piece> implements Initializable {
         }
 
         //Resetting variables
-        hasSelectedPiece = false;
-        selectedPiece = null;
+        moves.setSelectedPiece(null);
         enPassantCoordinatesList.clear();
         enPassantEnemyPawnCoordinatesList.clear();
-        attackingMovesList.clear();
-        legalMovesList.clear();
+        moves.getAttackingMovesList().clear();
+        moves.getLegalMovesList().clear();
         board.updateBoard();
     }
 
@@ -277,23 +228,22 @@ public class ChessBoardController<T extends Piece> implements Initializable {
          * - enemy King is not in check
          * - all of enemy pieces can't move*/
         isCalculatingStalemate = true;
-        legalMovesList.clear();
+        moves.getLegalMovesList().clear();
 
-        List<T> enemyPlayerPieces = nextTurnPlayer.getPieces();
-        T selectedPieceTemp = selectedPiece;
-        for (T piece : enemyPlayerPieces) {
-            selectedPieceMediator.setData(piece);
+        List<Piece> enemyPlayerPieces = nextTurnPlayer.getPieces();
+        Piece selectedPieceTemp = moves.getSelectedPiece();
+        for (Piece piece : enemyPlayerPieces) {
+            moves.setSelectedPiece(piece);
             piece.move();
 
-            if (legalMovesList.size() > 0) {
+            if (moves.getLegalMovesList().size() > 0) {
                 isCalculatingStalemate = false;
                 return;
             }
         }
-        selectedPiece = selectedPieceTemp;
-        selectedPieceMediator.setData(selectedPieceTemp);
+        moves.setSelectedPiece(selectedPieceTemp);
 
-        if (legalMovesList.size() == 0 && !kingIsChecked) {
+        if (moves.getLegalMovesList().size() == 0 && !nextTurnPlayer.isInCheck) {
             nextTurnPlayer.isStalemated = true;
         }
         isCalculatingStalemate = false;
@@ -304,18 +254,19 @@ public class ChessBoardController<T extends Piece> implements Initializable {
      */
     private void checkForCheckmate() {
         isCalculatingCheckmate = true;
-        legalMovesList.clear();
+        moves.getLegalMovesList().clear();
 
         moves.calculateProtection(nextTurnPlayer.getPlayerPiecesColor());
 
-        List<T> enemyPlayerPieces = nextTurnPlayer.getPieces();
-        T selectedPieceTemp = selectedPiece;
-        for (T piece : enemyPlayerPieces) {
-            selectedPieceMediator.setData(piece);
+        List<Piece> enemyPlayerPieces = nextTurnPlayer.getPieces();
+        Piece selectedPieceTemp = moves.getSelectedPiece();
+        for (Piece piece : enemyPlayerPieces) {
+            moves.setSelectedPiece(piece);
             piece.move();
         }
-        selectedPiece = selectedPieceTemp;
-        if (legalMovesList.size() == 0) {
+        moves.setSelectedPiece(selectedPieceTemp);
+
+        if (moves.getLegalMovesList().size() == 0) {
             nextTurnPlayer.isCheckmated = true;
         }
         isCalculatingCheckmate = false;
@@ -328,18 +279,18 @@ public class ChessBoardController<T extends Piece> implements Initializable {
     private void castle(String castlingCoordinates) {
         Rook rook;
 
-        switch (selectedPiece.getColor()) {
+        switch (moves.getSelectedPiece().getColor()) {
             case BLACK -> {
                 if (castlingCoordinates.toCharArray()[0] == 'b') { //Short castle
-                    rook = (Rook) chessPiecesMap.get("a1");
+                    rook = (Rook) moves.getChessPiecesMap().get("a1");
                     rook.setCoordinates("c1");
-                    chessPiecesMap.remove("a1");
-                    chessPiecesMap.put("c1", (T) rook);
+                    moves.getChessPiecesMap().remove("a1");
+                    moves.getChessPiecesMap().put("c1", rook);
                 } else if (castlingCoordinates.toCharArray()[0] == 'f') { //Long castle
-                    rook = (Rook) chessPiecesMap.get("h1");
+                    rook = (Rook) moves.getChessPiecesMap().get("h1");
                     rook.setCoordinates("e1");
-                    chessPiecesMap.remove("h1");
-                    chessPiecesMap.put("e1", (T) rook);
+                    moves.getChessPiecesMap().remove("h1");
+                    moves.getChessPiecesMap().put("e1", rook);
                 }
                 blackPlayer.hasCastled = true;
                 blackPlayer.canCastle = false;
@@ -347,15 +298,15 @@ public class ChessBoardController<T extends Piece> implements Initializable {
             }
             case WHITE -> {
                 if (castlingCoordinates.toCharArray()[0] == 'b') { //Short castle
-                    rook = (Rook) chessPiecesMap.get("a8");
+                    rook = (Rook) moves.getChessPiecesMap().get("a8");
                     rook.setCoordinates("c8");
-                    chessPiecesMap.remove("a8");
-                    chessPiecesMap.put("c8", (T) rook);
+                    moves.getChessPiecesMap().remove("a8");
+                    moves.getChessPiecesMap().put("c8", rook);
                 } else if (castlingCoordinates.toCharArray()[0] == 'f') { //Long castle
-                    rook = (Rook) chessPiecesMap.get("h8");
+                    rook = (Rook) moves.getChessPiecesMap().get("h8");
                     rook.setCoordinates("e8");
-                    chessPiecesMap.remove("h8");
-                    chessPiecesMap.put("e8", (T) rook);
+                    moves.getChessPiecesMap().remove("h8");
+                    moves.getChessPiecesMap().put("e8", rook);
                 }
                 whitePlayer.hasCastled = true;
                 whitePlayer.canCastle = false;
@@ -370,10 +321,10 @@ public class ChessBoardController<T extends Piece> implements Initializable {
      * If function throws exception -> there is a pawn that is not set as new Pawn in Board class!
      */
     public void resetEnPassantAfterTurn(Colour colour) {
-
-        for (T piece : chessPiecesMap.values()) {
+    /**CONVERT TO STREAM API....*/
+        for (Piece piece : moves.getChessPiecesMap().values()) {
             if (piece instanceof Pawn && piece.getColor().equals(colour)) {
-                ((Pawn) piece).setHasDoubleMoved(false);
+                ((Pawn) piece).hasDoubleMoved = false;
             }
         }
     }

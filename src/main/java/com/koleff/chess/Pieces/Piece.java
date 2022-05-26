@@ -58,8 +58,8 @@ public abstract class Piece {
     }
 
     public void setCoordinates(String coordinates) {
-        coordinatesX = coordinates.charAt(0);
-        coordinatesY = Integer.parseInt(String.valueOf(coordinates.charAt(1)));
+        this.coordinatesX = coordinates.charAt(0);
+        this.coordinatesY = Integer.parseInt(String.valueOf(coordinates.charAt(1)));
     }
 
     /**

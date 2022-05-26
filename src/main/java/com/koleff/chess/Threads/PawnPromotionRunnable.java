@@ -1,4 +1,4 @@
-package com.koleff.chess.MediatorAndThreads;
+package com.koleff.chess.Threads;
 
 import com.koleff.chess.Pieces.Pawn;
 

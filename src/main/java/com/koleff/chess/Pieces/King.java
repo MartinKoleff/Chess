@@ -2,7 +2,7 @@ package com.koleff.chess.Pieces;
 
 import java.util.LinkedHashMap;
 
-import static com.koleff.chess.Board.ChessBoardController.moves;
+import static com.koleff.chess.Board.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 
@@ -149,80 +149,78 @@ public class King extends Piece {
      * and kingCoordinates-h1  for Long castle) (a1 and h1 not included)
      */
     public  <T extends Piece> void checkForCastling(Colour piecesColor) {
-        LinkedHashMap<String, T> chessPiecesMap = ((LinkedHashMap<String, T>) chessPiecesMapMediator.getData()); /**To test...*/
-
         moves.calculateAttackingMoves(nextTurnPlayer.getPlayerPiecesColor());
 
-        if (castlingMovesList.isEmpty()) {
-            castlingMovesList.add("b1");
-            castlingMovesList.add("b8");
-            castlingMovesList.add("f1");
-            castlingMovesList.add("f8");
+        if (moves.castlingMovesList.isEmpty()) {
+            moves.castlingMovesList.add("b1");
+            moves.castlingMovesList.add("b8");
+            moves.castlingMovesList.add("f1");
+            moves.castlingMovesList.add("f8");
         }
         try {
             switch (piecesColor) {
                 case WHITE -> {
                     //Short castle (king side)
-                    if (!kingIsChecked && selectedPieceMediator.getData() instanceof King
-                            && chessPiecesMap.containsKey("a8")
-                            && !chessPiecesMap.get("a8").hasMoved
-                            && !chessPiecesMap.get("d8").hasMoved
-                            && !chessPiecesMap.containsKey("b8")
-                            && !chessPiecesMap.containsKey("c8")
-                            && !attackingMovesList.contains("b8")
-                            && !attackingMovesList.contains("c8")) {
+                    if (!nextTurnPlayer.isInCheck && moves.getSelectedPiece()  instanceof King
+                            && moves.getChessPiecesMap().containsKey("a8")
+                            && !moves.getChessPiecesMap().get("a8").hasMoved
+                            && !moves.getChessPiecesMap().get("d8").hasMoved
+                            && !moves.getChessPiecesMap().containsKey("b8")
+                            && !moves.getChessPiecesMap().containsKey("c8")
+                            && !moves.getAttackingMovesList().contains("b8")
+                            && !moves.getAttackingMovesList().contains("c8")) {
 
                         System.out.println("Short Castle -> b8");
-                        showLegalMove("b8");
+                        moves.showLegalMove("b8");
                         whitePlayer.canCastle = true;
                     }
                     //Long castle (queen side)
-                    if (!kingIsChecked && selectedPieceMediator.getData() instanceof King
-                            && chessPiecesMap.containsKey("h8")
-                            && !chessPiecesMap.get("h8").hasMoved
-                            && !chessPiecesMap.get("d8").hasMoved
-                            && !chessPiecesMap.containsKey("e8")
-                            && !chessPiecesMap.containsKey("f8")
-                            && !chessPiecesMap.containsKey("g8")
-                            && !attackingMovesList.contains("e8")
-                            && !attackingMovesList.contains("f8")
-                            && !attackingMovesList.contains("g8")) {
+                    if (!nextTurnPlayer.isInCheck && moves.getSelectedPiece()  instanceof King
+                            && moves.getChessPiecesMap().containsKey("h8")
+                            && !moves.getChessPiecesMap().get("h8").hasMoved
+                            && !moves.getChessPiecesMap().get("d8").hasMoved
+                            && !moves.getChessPiecesMap().containsKey("e8")
+                            && !moves.getChessPiecesMap().containsKey("f8")
+                            && !moves.getChessPiecesMap().containsKey("g8")
+                            && !moves.getAttackingMovesList().contains("e8")
+                            && !moves.getAttackingMovesList().contains("f8")
+                            && !moves.getAttackingMovesList().contains("g8")) {
 
                         System.out.println("Long Castle -> f8");
-                        showLegalMove("f8");
+                        moves.showLegalMove("f8");
                         whitePlayer.canCastle = true;
                     }
                     break;
                 }
                 case BLACK -> {
                     //Short castle (king side)
-                    if (!kingIsChecked && selectedPieceMediator.getData() instanceof King
-                            && chessPiecesMap.containsKey("a1")
-                            && !chessPiecesMap.get("a1").hasMoved
-                            && !chessPiecesMap.get("d1").hasMoved
-                            && !chessPiecesMap.containsKey("b1")
-                            && !chessPiecesMap.containsKey("c1")
-                            && !attackingMovesList.contains("b1")
-                            && !attackingMovesList.contains("c1")) {
+                    if (!nextTurnPlayer.isInCheck && moves.getSelectedPiece() instanceof King
+                            && moves.getChessPiecesMap().containsKey("a1")
+                            && !moves.getChessPiecesMap().get("a1").hasMoved
+                            && !moves.getChessPiecesMap().get("d1").hasMoved
+                            && !moves.getChessPiecesMap().containsKey("b1")
+                            && !moves.getChessPiecesMap().containsKey("c1")
+                            && !moves.getAttackingMovesList().contains("b1")
+                            && !moves.getAttackingMovesList().contains("c1")) {
 
                         System.out.println("Short Castle -> b1");
-                        showLegalMove("b1");
+                        moves.showLegalMove("b1");
                         blackPlayer.canCastle = true;
                     }
                     //Long castle (queen side)
-                    if (!kingIsChecked && selectedPieceMediator.getData() instanceof King
-                            && chessPiecesMap.containsKey("h1")
-                            && !chessPiecesMap.get("h1").hasMoved
-                            && !chessPiecesMap.get("d1").hasMoved
-                            && !chessPiecesMap.containsKey("e1")
-                            && !chessPiecesMap.containsKey("f1")
-                            && !chessPiecesMap.containsKey("g1")
-                            && !attackingMovesList.contains("e1")
-                            && !attackingMovesList.contains("f1")
-                            && !attackingMovesList.contains("g1")) {
+                    if (!nextTurnPlayer.isInCheck && moves.getSelectedPiece()  instanceof King
+                            && moves.getChessPiecesMap().containsKey("h1")
+                            && !moves.getChessPiecesMap().get("h1").hasMoved
+                            && !moves.getChessPiecesMap().get("d1").hasMoved
+                            && !moves.getChessPiecesMap().containsKey("e1")
+                            && !moves.getChessPiecesMap().containsKey("f1")
+                            && !moves.getChessPiecesMap().containsKey("g1")
+                            && !moves.getAttackingMovesList().contains("e1")
+                            && !moves.getAttackingMovesList().contains("f1")
+                            && !moves.getAttackingMovesList().contains("g1")) {
 
                         System.out.println("Long Castle -> f1");
-                        showLegalMove("f1");
+                        moves.showLegalMove("f1");
                         blackPlayer.canCastle = true;
                     }
                     break;

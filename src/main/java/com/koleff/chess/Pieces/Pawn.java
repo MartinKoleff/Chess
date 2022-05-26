@@ -10,21 +10,19 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 
-import static com.koleff.chess.Board.ChessBoardController.board;
+import static com.koleff.chess.Board.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 import static com.koleff.chess.MainMenu.Controller.chessBoardStage;
 
-public class Pawn<T extends Piece> extends Piece {
+public class Pawn extends Piece {
     /**
      * Fields
      */
-    private boolean hasDoubleMoved = false;
-    public static Stage pawnPromotionStage;
+    public boolean hasDoubleMoved = false;
     public boolean hasPromoted = false;
-
+    private static Stage pawnPromotionStage;
     /**
      * Constructors
      */
@@ -55,20 +53,12 @@ public class Pawn<T extends Piece> extends Piece {
     /**
      * Functions
      */
-    public void setHasDoubleMoved(boolean condition) {
-        hasDoubleMoved = condition;
-    }
-
-    public boolean getHasDoubleMoved() {
-        return hasDoubleMoved;
-    }
-
     public void promote(String coordinates) {
-        //Open pawnPromotionMenu.fxml ...
-        board.chessPiecesMap.remove(this.getCoordinates()); //Check if chessBoardMap saves...
-        chessPiecesMapMediator.setData(board.chessPiecesMap);
+        moves.getChessPiecesMap().remove(this.getCoordinates());
 
         this.hasPromoted = true;
+
+        //Open pawnPromotionMenu.fxml ...
         openPawnPromotion(coordinates);
     }
 
@@ -77,17 +67,17 @@ public class Pawn<T extends Piece> extends Piece {
      */
     private synchronized void openPawnPromotion(String coordinates) {
         Parent pawnPromotionRoot = null;
-
         try {
             pawnPromotionRoot = FXMLLoader.load(PawnPromotionController.class.getResource("/com.koleff.chess/pawnPromotionMenu.fxml")); ///com.koleff.chess/
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        PawnPromotionController.setPiece(coordinates, this);
-
         pawnPromotionStage = new Stage();
         pawnPromotionStage.setTitle("");
+
+        //Cant make object because fxml controllers cant have constructors...
+        PawnPromotionController.setPiece(coordinates, this);
+        PawnPromotionController.setStage(pawnPromotionStage);
 
         pawnPromotionStage.setScene(new Scene(pawnPromotionRoot, cellWidth, 400));
         pawnPromotionStage.setResizable(false);
@@ -126,8 +116,6 @@ public class Pawn<T extends Piece> extends Piece {
         String coordinatesEnPassantRightSquare = null;
         String coordinatesEnPassantLeftSquare = null;
         boolean isIllegal;
-        LinkedHashMap<String, T> chessPiecesMap = (LinkedHashMap<String, T>) chessPiecesMapMediator.getData();
-
 
         //BLACK UP
         if (this.getColor().equals(Colour.BLACK)) {
@@ -158,8 +146,6 @@ public class Pawn<T extends Piece> extends Piece {
             }
             hasToBreak = false;
         } else { //WHITE DOWN
-
-
             coordinatesX = this.getCoordinatesXInt();
             coordinatesY = this.getCoordinatesY();
 
@@ -190,14 +176,14 @@ public class Pawn<T extends Piece> extends Piece {
             }
         }
         hasToBreak = false;
-        if (chessPiecesMap.containsKey(coordinatesUpperLeftSquare) || (isCalculatingAttackingMoves && coordinatesUpperLeftSquare != null)) {
+        if (moves.getChessPiecesMap().containsKey(coordinatesUpperLeftSquare) || (isCalculatingAttackingMoves && coordinatesUpperLeftSquare != null)) {
             isIllegal = moves.checkIfMoveIsIllegal(coordinatesUpperLeftSquare);
             if (!isIllegal && !isCalculatingAttackingMoves && !isCalculatingKingDiscoveryFromAllyPiece && !calculatingIfPieceProtectsKing && !isCalculatingProtection) {
                 System.out.printf("Left -> %s\n", coordinatesUpperLeftSquare);
             }
         }
         hasToBreak = false;
-        if (chessPiecesMap.containsKey(coordinatesUpperRightSquare) || (isCalculatingAttackingMoves && coordinatesUpperRightSquare != null)) {
+        if (moves.getChessPiecesMap().containsKey(coordinatesUpperRightSquare) || (isCalculatingAttackingMoves && coordinatesUpperRightSquare != null)) {
             isIllegal = moves.checkIfMoveIsIllegal(coordinatesUpperRightSquare);
             if (!isIllegal && !isCalculatingAttackingMoves && !isCalculatingKingDiscoveryFromAllyPiece && !calculatingIfPieceProtectsKing && !isCalculatingProtection) {
                 System.out.printf("Right -> %s\n", coordinatesUpperRightSquare);
@@ -218,16 +204,14 @@ public class Pawn<T extends Piece> extends Piece {
      * Checks for En Passant on the left
      */
     public void checkForEnPassantOnTheLeft(String coordinatesEnPassantLeftSquare, int coordinatesY) {
-        LinkedHashMap<String, T> chessPiecesMap = ((LinkedHashMap<String, T>) chessPiecesMapMediator.getData());
-
         try {
-            if (chessPiecesMap.get(coordinatesEnPassantLeftSquare) instanceof Pawn) { //En passant on the left
-                if (chessPiecesMap.get(coordinatesEnPassantLeftSquare).getColor().equals(Colour.BLACK)
-                        && ((T) selectedPieceMediator.getData()).getColor().equals(Colour.WHITE)) {
+            if (moves.getChessPiecesMap().get(coordinatesEnPassantLeftSquare) instanceof Pawn) { //En passant on the left
+                if (moves.getChessPiecesMap().get(coordinatesEnPassantLeftSquare).getColor().equals(Colour.BLACK)
+                        && (moves.getSelectedPiece().getColor().equals(Colour.WHITE))) {
                     enPassantSquare = getCoordinatesToString(this.getCoordinatesXInt() - 1, coordinatesY - 1);
                     enPassantEnemyPawnSquare = getCoordinatesToString(this.getCoordinatesXInt() - 1, coordinatesY);
-                } else if (chessPiecesMap.get(coordinatesEnPassantLeftSquare).getColor().equals(Colour.WHITE)
-                        && ((T) selectedPieceMediator.getData()).getColor().equals(Colour.BLACK)) {
+                } else if (moves.getChessPiecesMap().get(coordinatesEnPassantLeftSquare).getColor().equals(Colour.WHITE)
+                        && (moves.getSelectedPiece().getColor().equals(Colour.BLACK))) {
                     enPassantSquare = getCoordinatesToString(this.getCoordinatesXInt() - 1, coordinatesY + 1);
                     enPassantEnemyPawnSquare = getCoordinatesToString(this.getCoordinatesXInt() - 1, coordinatesY);
                 }
@@ -243,16 +227,14 @@ public class Pawn<T extends Piece> extends Piece {
      * Checks for En Passant on the right
      */
     public void checkForEnPassantOnTheRight(String coordinatesEnPassantRightSquare, int coordinatesY) {
-        LinkedHashMap<String, T> chessPiecesMap = ((LinkedHashMap<String, T>) chessPiecesMapMediator.getData()); /**To test...*/
-
         try {
-            if (chessPiecesMap.get(coordinatesEnPassantRightSquare) instanceof Pawn) { //En passant on the right
-                if (chessPiecesMap.get(coordinatesEnPassantRightSquare).getColor().equals(Colour.BLACK)
-                        && ((T) selectedPieceMediator.getData()).getColor().equals(Colour.WHITE)) {
+            if (moves.getChessPiecesMap().get(coordinatesEnPassantRightSquare) instanceof Pawn) { //En passant on the right
+                if (moves.getChessPiecesMap().get(coordinatesEnPassantRightSquare).getColor().equals(Colour.BLACK)
+                        && (moves.getSelectedPiece().getColor().equals(Colour.WHITE))) {
                     enPassantSquare = getCoordinatesToString(this.getCoordinatesXInt() + 1, coordinatesY - 1);
                     enPassantEnemyPawnSquare = getCoordinatesToString(this.getCoordinatesXInt() + 1, coordinatesY);
-                } else if (chessPiecesMap.get(coordinatesEnPassantRightSquare).getColor().equals(Colour.WHITE)
-                        && ((T) selectedPieceMediator.getData()).getColor().equals(Colour.BLACK)) {
+                } else if (moves.getChessPiecesMap().get(coordinatesEnPassantRightSquare).getColor().equals(Colour.WHITE)
+                        && (moves.getSelectedPiece().getColor().equals(Colour.BLACK))) {
                     enPassantSquare = getCoordinatesToString(this.getCoordinatesXInt() + 1, coordinatesY + 1);
                     enPassantEnemyPawnSquare = getCoordinatesToString(this.getCoordinatesXInt() + 1, coordinatesY);
                 }
@@ -269,32 +251,26 @@ public class Pawn<T extends Piece> extends Piece {
      * Shows En Passant on the board if the move is legal
      */
     private void checkForEnPassant(String coordinatesEnPassantLeftOrRightSquare) {
-        LinkedHashMap<String, T> chessPiecesMap = ((LinkedHashMap<String, T>) chessPiecesMapMediator.getData());
-        T selectedPiece = (T) selectedPieceMediator.getData();
-        if (!chessPiecesMap.containsKey(enPassantSquare) && enPassantSquare != null) {
-            if (((Pawn) chessPiecesMap.get(coordinatesEnPassantLeftOrRightSquare)).getHasDoubleMoved()) {
+        if (!moves.getChessPiecesMap().containsKey(enPassantSquare) && enPassantSquare != null) {
+            if (((Pawn) moves.getChessPiecesMap().get(coordinatesEnPassantLeftOrRightSquare)).hasDoubleMoved) {
                 enPassantCoordinatesList.add(enPassantSquare);
                 enPassantEnemyPawnCoordinatesList.add(enPassantEnemyPawnSquare);
 
 
                 //Check for discovery...
-                T enemyPawn = chessPiecesMap.get(enPassantEnemyPawnSquare);
-                chessPiecesMap.remove(enPassantEnemyPawnSquare);
-                chessPiecesMap.remove(selectedPiece.getCoordinates());
-                chessPiecesMap.put(enPassantSquare, selectedPiece);
-
-                chessPiecesMapMediator.setData(chessPiecesMap);
-                moves.updateChessPiecesMap();
+                Pawn enemyPawn = (Pawn) moves.getChessPiecesMap().get(enPassantEnemyPawnSquare);
+                moves.getChessPiecesMap().remove(enPassantEnemyPawnSquare);
+                moves.getChessPiecesMap().remove(moves.getSelectedPiece().getCoordinates());
+                moves.getChessPiecesMap().put(enPassantSquare, moves.getSelectedPiece());
 
                 if (!currentPlayer.checkForKingChecks()) {
-                    showLegalMove(enPassantSquare);
+                    moves.showLegalMove(enPassantSquare);
                     System.out.printf("En Passant -> %s\n", enPassantSquare);
                 }
 
-                chessPiecesMap.put(enemyPawn.getCoordinates(), enemyPawn);
-                chessPiecesMap.remove(enPassantSquare);
-                chessPiecesMap.put(selectedPiece.getCoordinates(), selectedPiece);
-                moves.updateChessPiecesMap();
+                moves.getChessPiecesMap().put(enemyPawn.getCoordinates(), enemyPawn);
+                moves.getChessPiecesMap().remove(enPassantSquare);
+                moves.getChessPiecesMap().put(moves.getSelectedPiece().getCoordinates(), moves.getSelectedPiece());
             }
         }
     }

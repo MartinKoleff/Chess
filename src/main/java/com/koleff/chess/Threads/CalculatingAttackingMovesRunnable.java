@@ -1,16 +1,18 @@
-package com.koleff.chess.MediatorAndThreads;
+package com.koleff.chess.Threads;
 
 import com.koleff.chess.CoordinatesAndMoves.Moves;
 import com.koleff.chess.Pieces.Piece;
 
-public class CalculatingAttackingMovesRunnable<T extends Piece> extends Moves implements Runnable {
+import static com.koleff.chess.Board.ChessBoardController.board;
+
+public class CalculatingAttackingMovesRunnable extends Moves implements Runnable {
     /**
      * Fields
      */
-    private T piece;
+    private Piece piece;
     private boolean stopRequest = false;
 
-    public CalculatingAttackingMovesRunnable(T piece) {
+    public CalculatingAttackingMovesRunnable(Piece piece) {
         this.piece = piece;
     }
 

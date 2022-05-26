@@ -1,24 +1,22 @@
-package com.koleff.chess.MediatorAndThreads;
+package com.koleff.chess.Threads;
 
-public class CalculatingAttackingMovesThread extends Thread{
-    /**
-     * Fields
-     */
-    private CalculatingAttackingMovesRunnable runnable;
+public class PawnPromotionThread extends Thread {
+    private PawnPromotionRunnable runnable;
     private boolean stopRequest;
 
 
-    public CalculatingAttackingMovesThread(CalculatingAttackingMovesRunnable runnable){
+    public PawnPromotionThread(PawnPromotionRunnable runnable) {
         this.runnable = runnable;
     }
+
     /**
      * Functions
      */
-    public synchronized void requestStop(){
+    public synchronized void requestStop() {
         this.stopRequest = true;
     }
 
-    public synchronized boolean isStopRequested(){
+    public synchronized boolean isStopRequested() {
         return this.stopRequest;
     }
 

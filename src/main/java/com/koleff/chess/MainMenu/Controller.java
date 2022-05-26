@@ -26,10 +26,10 @@ public class Controller {
     public static Stage chessBoardStage;
     public static final int chessBoardWidth = 800;
     public static final int chessBoardHeight = 800;
-    public static Parent chessBoardRoot = null;
 
     @FXML
     public void openChessBoard(ActionEvent actionEvent) {
+        Parent chessBoardRoot = null;
         try {
             chessBoardRoot = FXMLLoader.load(ChessBoardController.class.getResource("/com.koleff.chess/chessBoard.fxml")); ///com.koleff.chess/
         } catch (IOException e) {

@@ -12,11 +12,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Board<T extends Piece> extends ChessBoardController {
+public class Board extends ChessBoardController {
     /**
      * Fields
      */
-    private static GridPane gridPane;
+    private static GridPane gridPane; //To remove...
 
     /**
      * Functions
@@ -31,42 +31,42 @@ public class Board<T extends Piece> extends ChessBoardController {
     @SuppressWarnings("unchecked")
     public void arrangeBoard() {
         //White Pieces
-        addToBoard("a8", (T) new Rook('a', 8, Colour.WHITE));
-        addToBoard("b8", (T) new Knight('b', 8, Colour.WHITE));
-        addToBoard("c8", (T) new Bishop('c', 8, Colour.WHITE));
-        addToBoard("e8", (T) new Queen('e', 8, Colour.WHITE));
-        addToBoard("d8", (T) new King('d', 8, Colour.WHITE));
-        addToBoard("f8", (T) new Bishop('f', 8, Colour.WHITE));
-        addToBoard("g8", (T) new Knight('g', 8, Colour.WHITE));
-        addToBoard("h8", (T) new Rook('h', 8, Colour.WHITE));
+        addToBoard("a8", new Rook('a', 8, Colour.WHITE));
+        addToBoard("b8", new Knight('b', 8, Colour.WHITE));
+        addToBoard("c8", new Bishop('c', 8, Colour.WHITE));
+        addToBoard("e8", new Queen('e', 8, Colour.WHITE));
+        addToBoard("d8", new King('d', 8, Colour.WHITE));
+        addToBoard("f8", new Bishop('f', 8, Colour.WHITE));
+        addToBoard("g8", new Knight('g', 8, Colour.WHITE));
+        addToBoard("h8", new Rook('h', 8, Colour.WHITE));
 
-        addToBoard("a7", (T) new Pawn('a', 7, Colour.WHITE));
-        addToBoard("b7", (T) new Pawn('b', 7, Colour.WHITE));
-        addToBoard("c7", (T) new Pawn('c', 7, Colour.WHITE));
-        addToBoard("d7", (T) new Pawn('d', 7, Colour.WHITE));
-        addToBoard("e7", (T) new Pawn('e', 7, Colour.WHITE));
-        addToBoard("f7", (T) new Pawn('f', 7, Colour.WHITE));
-        addToBoard("g7", (T) new Pawn('g', 7, Colour.WHITE));
-        addToBoard("h7", (T) new Pawn('h', 7, Colour.WHITE));
+        addToBoard("a7", new Pawn('a', 7, Colour.WHITE));
+        addToBoard("b7", new Pawn('b', 7, Colour.WHITE));
+        addToBoard("c7", new Pawn('c', 7, Colour.WHITE));
+        addToBoard("d7", new Pawn('d', 7, Colour.WHITE));
+        addToBoard("e7", new Pawn('e', 7, Colour.WHITE));
+        addToBoard("f7", new Pawn('f', 7, Colour.WHITE));
+        addToBoard("g7", new Pawn('g', 7, Colour.WHITE));
+        addToBoard("h7", new Pawn('h', 7, Colour.WHITE));
 
         //Black Pieces
-        addToBoard("a1", (T) new Rook('a', 1, Colour.BLACK));
-        addToBoard("b1", (T) new Knight('b', 1, Colour.BLACK));
-        addToBoard("c1", (T) new Bishop('c', 1, Colour.BLACK));
-        addToBoard("e1", (T) new Queen('e', 1, Colour.BLACK));
-        addToBoard("d1", (T) new King('d', 1, Colour.BLACK));
-        addToBoard("f1", (T) new Bishop('f', 1, Colour.BLACK));
-        addToBoard("g1", (T) new Knight('g', 1, Colour.BLACK));
-        addToBoard("h1", (T) new Rook('h', 1, Colour.BLACK));
+        addToBoard("a1", new Rook('a', 1, Colour.BLACK));
+        addToBoard("b1", new Knight('b', 1, Colour.BLACK));
+        addToBoard("c1", new Bishop('c', 1, Colour.BLACK));
+        addToBoard("e1", new Queen('e', 1, Colour.BLACK));
+        addToBoard("d1", new King('d', 1, Colour.BLACK));
+        addToBoard("f1", new Bishop('f', 1, Colour.BLACK));
+        addToBoard("g1", new Knight('g', 1, Colour.BLACK));
+        addToBoard("h1", new Rook('h', 1, Colour.BLACK));
 
-        addToBoard("a2", (T) new Pawn('a', 2, Colour.BLACK));
-        addToBoard("b2", (T) new Pawn('b', 2, Colour.BLACK));
-        addToBoard("c2", (T) new Pawn('c', 2, Colour.BLACK));
-        addToBoard("d2", (T) new Pawn('d', 2, Colour.BLACK));
-        addToBoard("e2", (T) new Pawn('e', 2, Colour.BLACK));
-        addToBoard("f2", (T) new Pawn('f', 2, Colour.BLACK));
-        addToBoard("g2", (T) new Pawn('g', 2, Colour.BLACK));
-        addToBoard("h2", (T) new Pawn('h', 2, Colour.BLACK));
+        addToBoard("a2", new Pawn('a', 2, Colour.BLACK));
+        addToBoard("b2", new Pawn('b', 2, Colour.BLACK));
+        addToBoard("c2", new Pawn('c', 2, Colour.BLACK));
+        addToBoard("d2", new Pawn('d', 2, Colour.BLACK));
+        addToBoard("e2", new Pawn('e', 2, Colour.BLACK));
+        addToBoard("f2", new Pawn('f', 2, Colour.BLACK));
+        addToBoard("g2", new Pawn('g', 2, Colour.BLACK));
+        addToBoard("h2", new Pawn('h', 2, Colour.BLACK));
     }
 
 
@@ -209,7 +209,7 @@ public class Board<T extends Piece> extends ChessBoardController {
 //        addToBoard("a1", (T) new King('a', 1, Colour.WHITE, Type.KING));
 //        addToBoard("h8", (T) new King('h', 8, Colour.BLACK, Type.KING));
 
-        //King Testing 1 //TOFIX
+        //King Testing 1
 //        addToBoard("d1", new King('d', 1, Colour.BLACK, Type.KING));
 //        addToBoard("b2", new King('b', 2, Colour.WHITE, Type.KING));
 //        addToBoard("h8", new Piece('h', 8, Colour.BLACK, Type.BISHOP));
@@ -461,9 +461,8 @@ public class Board<T extends Piece> extends ChessBoardController {
     /**
      * Adds the pieces in the Map
      */
-    public void addToBoard(String coordinates, T piece) {
-        chessPiecesMap.put(coordinates, piece);
-        chessPiecesMapMediator.setData(chessPiecesMap);
+    public void addToBoard(String coordinates, Piece piece) {
+        moves.getChessPiecesMap().put(coordinates, piece);
 
         if (piece.getColor().equals(Colour.WHITE)) {
             whitePlayer.addPiece(piece);
@@ -477,7 +476,7 @@ public class Board<T extends Piece> extends ChessBoardController {
     /**
      * Shows the pieces in the GUI
      */
-    protected void showPieceToBoard(T piece) {
+    protected void showPieceToBoard(Piece piece) {
         Image image = null;
         ImageView imageView;
 
@@ -578,10 +577,10 @@ public class Board<T extends Piece> extends ChessBoardController {
      */
     public void updateBoard() {
         paintBoard();
-        if (hasSelectedPiece) {
+        if (moves.getSelectedPiece() != null) { //hasSelectedPiece
             clearGridPane();
         }
-        for (T piece : ((LinkedHashMap<String, T>) chessPiecesMapMediator.getData()).values()) {
+        for (Piece piece : moves.getChessPiecesMap().values()) {
             showPieceToBoard(piece);
         }
     }
@@ -593,9 +592,9 @@ public class Board<T extends Piece> extends ChessBoardController {
         paintBoard();
         clearGridPane();
 
-        chessPiecesMap.clear();
-//        arrangeBoard();
-        arrangeTestingBoard();
+        moves.getChessPiecesMap().clear();
+        arrangeBoard();
+//        arrangeTestingBoard();
     }
 
     private static void clearGridPane() {

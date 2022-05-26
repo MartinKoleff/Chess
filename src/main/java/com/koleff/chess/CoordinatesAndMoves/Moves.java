@@ -1,51 +1,75 @@
 package com.koleff.chess.CoordinatesAndMoves;
 
 import com.koleff.chess.Board.Board;
-import com.koleff.chess.Board.ChessBoardController;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import com.koleff.chess.Pieces.*;
 import com.koleff.chess.Player.Player;
-import com.koleff.chess.MediatorAndThreads.CalculatingAttackingMovesRunnable;
-import com.koleff.chess.MediatorAndThreads.CalculatingAttackingMovesThread;
+import com.koleff.chess.Threads.CalculatingAttackingMovesRunnable;
+import com.koleff.chess.Threads.CalculatingAttackingMovesThread;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.koleff.chess.Board.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.calculateX;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 
-public class Moves<T extends Piece> extends ChessBoardController {
+public class Moves{
     /**
      * Fields
      */
+    private Map<String, Piece> chessPiecesMap = new LinkedHashMap(); //<K> String -> Coordinates (example: e4) | <V> Piece -> The Piece that is on the <K> coordinates
+    private List<String> legalMovesList = new ArrayList<>(); //String -> coordinates
+    private List<String> attackingMovesList = new ArrayList<>(); //String -> coordinates
+    private Piece selectedPiece = null;
+
+    //Move to Pawn...
     public static String enPassantSquare = null; //The square where the pawn will go after capture
     public static String enPassantEnemyPawnSquare = null; //The square of the enemy pawn
     public static List<String> enPassantCoordinatesList = new ArrayList<>();
     public static List<String> enPassantEnemyPawnCoordinatesList = new ArrayList<>();
 
+    //Make non-static...
     public static boolean calculatingIfPieceProtectsKing = false;
     public static boolean isCalculatingKingDiscoveryFromAllyPiece = false;
     public static boolean isCalculatingAttackingMoves = false;
     public static boolean isCalculatingProtection = false;
+    public static boolean isCalculatingCheckmate = false;
+    public static boolean isCalculatingStalemate = false;
     public static boolean hasToBreak = false;
 
-    public static List<String> castlingMovesList = new ArrayList<>();
+    public List<String> castlingMovesList = new ArrayList<>();
     private List<CalculatingAttackingMovesThread> calculateAttackingMovesThreadsList = new ArrayList<>();
 
     /**
      * Functions
      */
-
-    /**
-     * Updates the selected / current Piece
-     */
-    public void updateSelectedPiece() {
-        selectedPiece = (T) selectedPieceMediator.getData();
+    public List<String> getAttackingMovesList() {
+        return attackingMovesList;
     }
 
+    public Map<String, Piece> getChessPiecesMap() {
+        return chessPiecesMap;
+    }
+
+    public List<String> getLegalMovesList() {
+        return legalMovesList;
+    }
+
+    public void setAttackingMovesList(List<String> attackingMovesList) {
+        this.attackingMovesList = attackingMovesList;
+    }
+
+    public Piece getSelectedPiece() {
+        return selectedPiece;
+    }
+
+    public void setSelectedPiece(Piece selectedPiece) {
+        this.selectedPiece = selectedPiece;
+    }
     /**
      * Helping function for when King is in check
      * Calculates all attacking moves of the enemy player / the color given
@@ -54,13 +78,11 @@ public class Moves<T extends Piece> extends ChessBoardController {
         attackingMovesList.clear();
         isCalculatingAttackingMoves = true;
 
-        updateSelectedPiece();
-        updateChessPiecesMap();
-        List<T> playerPieces;
-        T selectedPieceTemp = (T) selectedPiece;
+        List<Piece> playerPieces;
+        Piece selectedPieceTemp = selectedPiece;
 
-        playerPieces = (List<T>) chessPiecesMap.values().stream() //Implicit casting because compiler doesn't recognize chessPiecesMap
-                .filter(e -> ((T)e).getColor().equals(pieceColor))
+        playerPieces =  chessPiecesMap.values().stream()
+                .filter(e -> e.getColor().equals(pieceColor))
                 .collect(Collectors.toList());
 
         calculateMoves(playerPieces);
@@ -92,14 +114,11 @@ public class Moves<T extends Piece> extends ChessBoardController {
      * Calculates the protection of the enemy pieces each turn
      */
     public void calculateProtection(Colour color) {
-        updateSelectedPiece();
-        updateChessPiecesMap();
+        List<Piece> playerPieces;
+        Piece selectedPieceTemp = selectedPiece;
 
-        List<T> playerPieces;
-        T selectedPieceTemp = (T) selectedPiece;
-
-        playerPieces = (List<T>) board.chessPiecesMap.values().stream()
-                .filter(e -> ((T)e).getColor().equals(color))
+        playerPieces = chessPiecesMap.values().stream()
+                .filter(e -> e.getColor().equals(color))
                 .collect(Collectors.toList());
 
         isCalculatingProtection = true;
@@ -113,12 +132,12 @@ public class Moves<T extends Piece> extends ChessBoardController {
     /**
      * Helping function for calculateAttackingMoves() and calculateProtection()
      */
-    private void calculateMoves(List<T> playerPieces) {
-        T selectedPieceTemp = (T) selectedPiece;
-        for (T piece : playerPieces) {
-            selectedPieceMediator.setData(piece);
+    private void calculateMoves(List<Piece> playerPieces) {
+        Piece selectedPieceTemp = selectedPiece;
+        for (Piece piece : playerPieces) {
+            setSelectedPiece(piece);
 
-            CalculatingAttackingMovesRunnable<T> runnable = new CalculatingAttackingMovesRunnable<>(piece);
+            CalculatingAttackingMovesRunnable runnable = new CalculatingAttackingMovesRunnable(piece);
             CalculatingAttackingMovesThread thread = new CalculatingAttackingMovesThread(runnable);
 
             thread.start();
@@ -127,7 +146,7 @@ public class Moves<T extends Piece> extends ChessBoardController {
         calculateAttackingMovesThreadsList.forEach(e -> e.requestStop());
         calculateAttackingMovesThreadsList.clear();
 
-        selectedPieceMediator.setData(selectedPieceTemp);
+        setSelectedPiece(selectedPieceTemp);
     }
 
     /**
@@ -135,13 +154,13 @@ public class Moves<T extends Piece> extends ChessBoardController {
      */
     public void clearProtection(Colour color) {
         System.out.println();
-        List<T> playerPieces;
+        List<Piece> playerPieces;
 
-        playerPieces = (List<T>) chessPiecesMap.values().stream()
-                .filter(e -> ((T)e).getColor().equals(color))
+        playerPieces = chessPiecesMap.values().stream()
+                .filter(e -> e.getColor().equals(color))
                 .collect(Collectors.toList());
 
-        for (T piece : playerPieces) {
+        for (Piece piece : playerPieces) {
             if (piece.getIsProtected()) {
                 System.out.printf("%s %s with player color %s was cleared of its protection!\n", piece.getClass().getSimpleName(), piece.getCoordinates(), piece.getColor());
                 piece.setIsProtected(false);
@@ -154,8 +173,6 @@ public class Moves<T extends Piece> extends ChessBoardController {
      * Returns boolean based on if the coordinates are legal / illegal move for the selected piece!
      */
     public boolean checkIfMoveIsIllegal(String coordinates) {
-        updateSelectedPiece();
-
         //If coordinates are invalid. (Only used with the King)
         if (coordinates.equals("") || hasToBreak) {
             if (selectedPiece instanceof King || selectedPiece instanceof Pawn) {
@@ -179,17 +196,17 @@ public class Moves<T extends Piece> extends ChessBoardController {
                 isCalculatingKingDiscoveryFromAllyPiece = false;
             } else {
                 isCalculatingKingDiscoveryFromAllyPiece = false;
-                if (!kingIsChecked) { //(continue for the whole diagonal if king is checked)
+                if (!nextTurnPlayer.isInCheck) { // (continue for the whole diagonal if king is checked)
                     return true;
                 }
             }
         }
 
         try {
-            if (!((T)chessPiecesMap.get(coordinates)).getColor().equals(selectedPiece.getColor())) { //Check if the found piece is the same color as the selected piece (otherwise its the last legal move!)
+            if (!chessPiecesMap.get(coordinates).getColor().equals(selectedPiece.getColor())) { //Check if the found piece is the same color as the selected piece (otherwise its the last legal move!)
                 if (!isCalculatingAttackingMoves && !isCalculatingProtection) {
-                    if (!kingIsChecked) { //If king is not in check logic...
-                        if (((T)chessPiecesMap.get(coordinates)).getIsProtected() && selectedPiece instanceof King) { //If king is not in check but is trying to get a piece that is protected by other piece from the same color
+                    if (!nextTurnPlayer.isInCheck) { //If king is not in check logic...
+                        if (chessPiecesMap.get(coordinates).getIsProtected() && selectedPiece instanceof King) { //If king is not in check but is trying to get a piece that is protected by other piece from the same color
                             return true;
                         } else if (selectedPiece instanceof Pawn && selectedPiece.getCoordinatesXInt() != coordinatesX) { //Pawn logic
                             showLegalMove(coordinates);
@@ -204,7 +221,7 @@ public class Moves<T extends Piece> extends ChessBoardController {
                     } else {
                         try {
                             if (attackingMovesList.contains(coordinates) && selectedPiece instanceof King
-                                    && ((T)chessPiecesMap.get(coordinates)).getIsProtected()) { //If the king is moving and the square is illegal
+                                    && (chessPiecesMap.get(coordinates)).getIsProtected()) { //If the king is moving and the square is illegal
                                 return true;
                             } else {
                                 return checkIfPieceDefendsCheck(coordinates);
@@ -215,9 +232,9 @@ public class Moves<T extends Piece> extends ChessBoardController {
                     }
                 } else {
                     if (isCalculatingProtection) {
-                        if (((T)chessPiecesMap.get(coordinates)).getColor().equals(selectedPiece.getColor())) {
+                        if (chessPiecesMap.get(coordinates).getColor().equals(selectedPiece.getColor())) {
                             System.out.printf("%s %s is protecting %s %s with player color -> %s!!\n", selectedPiece.getClass().getSimpleName(), selectedPiece.getCoordinates(), chessPiecesMap.get(coordinates).getClass().getSimpleName(), coordinates, selectedPiece.getColor());
-                            ((T)chessPiecesMap.get(coordinates)).setIsProtected(true);
+                            chessPiecesMap.get(coordinates).setIsProtected(true);
                             hasToBreak = true;
                             return true;
                         }
@@ -233,10 +250,10 @@ public class Moves<T extends Piece> extends ChessBoardController {
             }
             if (isCalculatingProtection) {//selectedPiece protects the piece with current coordinates //isCalculatingAttackingMoves && !isCalculatingKingDiscoveryFromAllyPiece ||
                 System.out.printf("%s %s is protecting %s %s with player color -> %s!\n", selectedPiece.getClass().getSimpleName(), selectedPiece.getCoordinates(), chessPiecesMap.get(coordinates).getClass().getSimpleName(), coordinates, selectedPiece.getColor());
-                ((T)chessPiecesMap.get(coordinates)).setIsProtected(true);
+                (chessPiecesMap.get(coordinates)).setIsProtected(true);
                 hasToBreak = true;
                 return true;
-            } else if (kingIsChecked) {
+            } else if (nextTurnPlayer.isInCheck) {
                 return checkIfPieceDefendsCheck(coordinates);
             }
         } catch (RuntimeException e) {
@@ -244,11 +261,11 @@ public class Moves<T extends Piece> extends ChessBoardController {
                 return false;
             }
             if (!isCalculatingAttackingMoves) {
-                if (!kingIsChecked) {
+                if (!nextTurnPlayer.isInCheck) {
                     if (!attackingMovesList.contains(coordinates) || !(selectedPiece instanceof King)) {
                         showLegalMove(coordinates);
                     }
-                } else if (kingIsChecked) {
+                } else if (nextTurnPlayer.isInCheck) {
                     return checkIfPieceDefendsCheck(coordinates);
                 }
 //                showLegalMove(coordinates);
@@ -269,22 +286,21 @@ public class Moves<T extends Piece> extends ChessBoardController {
      * - if calculateAttackingMoves after the turn contains the king coordinates -> illegal move
      */
     private boolean checkIfKingCanBeDiscovered(String coordinates, Player player) {
-        T currentPiece = (T) selectedPiece.copy();
-        T tempPiece = (T) selectedPiece.copy();
+        Piece currentPiece = selectedPiece.copy();
+        Piece tempPiece = selectedPiece.copy();
 
-        T enemyPieceTemp = null;
+        Piece enemyPieceTemp = null;
 
         try {
-            if (((T)chessPiecesMap.get(coordinates)).getColor().equals(player.getPlayerPiecesColor())) {
+            if (chessPiecesMap.get(coordinates).getColor().equals(player.getPlayerPiecesColor())) {
                 hasToBreak = true;
                 return true;
-            } else { //The piece is from the enemy team (it gets removed thru the calculations)
-                enemyPieceTemp = (T) ((T)chessPiecesMap.get(coordinates)).copy();
+            } else { //The piece is from the enemy team (it gets removed through the calculations)
+                enemyPieceTemp = chessPiecesMap.get(coordinates).copy();
             }
         } catch (RuntimeException e) {
 
         }
-
         chessPiecesMap.remove(selectedPiece.getCoordinates());
         currentPiece.setCoordinates(coordinates);
         chessPiecesMap.put(coordinates, currentPiece);
@@ -293,7 +309,7 @@ public class Moves<T extends Piece> extends ChessBoardController {
         if (player.checkForKingChecks()) {
             chessPiecesMap.put(tempPiece.getCoordinates(), tempPiece);
             chessPiecesMap.remove(currentPiece.getCoordinates());
-            selectedPiece = (T) tempPiece.copy();
+            selectedPiece = tempPiece.copy();
 
             if (enemyPieceTemp != null) { //Enemy piece has overlapping coordinates with ally piece (gets removed)
                 chessPiecesMap.put(enemyPieceTemp.getCoordinates(), enemyPieceTemp);
@@ -303,13 +319,13 @@ public class Moves<T extends Piece> extends ChessBoardController {
         } else {
             chessPiecesMap.put(tempPiece.getCoordinates(), tempPiece); //selectedPiece
             chessPiecesMap.remove(currentPiece.getCoordinates());
-            selectedPiece = (T) tempPiece.copy();
+            selectedPiece = tempPiece.copy();
 
             if (enemyPieceTemp != null) { //Enemy piece has overlapping coordinates with ally piece (gets removed)
                 chessPiecesMap.put(enemyPieceTemp.getCoordinates(), enemyPieceTemp);
             }
 
-            if (kingIsChecked) {
+            if (nextTurnPlayer.isInCheck) {
                 legalMovesList.add(coordinates);
             }
             return true; //(can protect! (is not in check))
@@ -320,15 +336,14 @@ public class Moves<T extends Piece> extends ChessBoardController {
     /**
      * Helping function for checkIfMoveIsLegal()
      */
-    @SuppressWarnings("unchecked")
     private boolean checkIfPieceDefendsCheck(String coordinates) {
         if (!isCalculatingAttackingMoves && selectedPiece instanceof King) { //King logic...
             try {
-                if (((T)chessPiecesMap.get(coordinates)).getIsProtected()
-                        || ((T)chessPiecesMap.get(coordinates)).getColor().equals(selectedPiece.getColor())) { //If the piece that the King tries to take are protected then the move is illegal
+                if (chessPiecesMap.get(coordinates).getIsProtected()
+                        || (chessPiecesMap.get(coordinates).getColor().equals(selectedPiece.getColor()))) { //If the piece that the King tries to take are protected then the move is illegal
                     hasToBreak = true;
                     return true;
-                } else if (!((T)chessPiecesMap.get(coordinates)).getIsProtected()) { //If the piece that attacks the King is not protected
+                } else if (!chessPiecesMap.get(coordinates).getIsProtected()) { //If the piece that attacks the King is not protected
                     showLegalMove(coordinates);
                     return false;
                 }
@@ -344,7 +359,7 @@ public class Moves<T extends Piece> extends ChessBoardController {
         } else {
             if (isCalculatingCheckmate || isCalculatingStalemate) {
                 try {
-                    if (((T)chessPiecesMap.get(coordinates)).getColor().equals(selectedPiece.getColor())) {
+                    if (chessPiecesMap.get(coordinates).getColor().equals(selectedPiece.getColor())) {
                         hasToBreak = true;
                         return true;
                     } else {
@@ -357,7 +372,7 @@ public class Moves<T extends Piece> extends ChessBoardController {
                 try {
                     if (selectedPiece instanceof Pawn
                             && selectedPiece.getCoordinatesXChar() == coordinates.charAt(0)
-                            && !((T)chessPiecesMap.get(coordinates)).getColor().equals(selectedPiece.getColor())) {
+                            && !chessPiecesMap.get(coordinates).getColor().equals(selectedPiece.getColor())) {
                         legalMovesList.clear();
                         hasToBreak = true;
                         return true;
@@ -377,20 +392,20 @@ public class Moves<T extends Piece> extends ChessBoardController {
      */
     private boolean checkIfPieceDeflectsCheck(String coordinates, Player player) {
         if (!isCalculatingAttackingMoves && attackingMovesList.contains(coordinates)
-                || (kingIsChecked && !isCalculatingAttackingMoves)) {
-            T removedPiece = null;
+                || (nextTurnPlayer.isInCheck && !isCalculatingAttackingMoves)) {
+            Piece removedPiece = null;
 
             if (chessPiecesMap.containsKey(coordinates)) { //There is a piece on the place of the coordinates
-                removedPiece = (T) ((T)chessPiecesMap.get(coordinates)).copy();
+                removedPiece = chessPiecesMap.get(coordinates).copy();
             }
 
-            chessPiecesMap.put(coordinates, (T) selectedPiece);
+            chessPiecesMap.put(coordinates, selectedPiece);
             chessPiecesMap.remove(selectedPiece.getCoordinates());
             calculatingIfPieceProtectsKing = true;
             try {
                 if (!player.checkForKingChecks() && legalMovesList.contains(coordinates)) {
                     chessPiecesMap.remove(coordinates);
-                    chessPiecesMap.put(selectedPiece.getCoordinates(), (T) selectedPiece);
+                    chessPiecesMap.put(selectedPiece.getCoordinates(), selectedPiece);
 
                     if (removedPiece != null) { //If there was a piece that was removed (the new coordinates of the selectedPiece overlap with other piece)
                         chessPiecesMap.put(removedPiece.getCoordinates(), removedPiece);
@@ -410,7 +425,7 @@ public class Moves<T extends Piece> extends ChessBoardController {
                 System.out.printf("King coordinates: %s\n", player.getKingCoordinates());
             }
             chessPiecesMap.remove(coordinates);
-            chessPiecesMap.put(selectedPiece.getCoordinates(), (T) selectedPiece);
+            chessPiecesMap.put(selectedPiece.getCoordinates(), selectedPiece);
 
             if (removedPiece != null) {  //If there was a piece that was removed (the new coordinates of the selectedPiece overlap with other piece)
                 chessPiecesMap.put(removedPiece.getCoordinates(), removedPiece);
@@ -427,8 +442,7 @@ public class Moves<T extends Piece> extends ChessBoardController {
     /**
      * Shows the legal moves as green circles on the board
      */
-    @SuppressWarnings("unchecked")
-    public static void showLegalMove(String coordinates) {
+    public void showLegalMove(String coordinates) {
         int coordinatesX = calculateX(coordinates.charAt(0));
         int coordinatesY = Integer.parseInt(String.valueOf(coordinates.charAt(1)));
 
@@ -449,9 +463,12 @@ public class Moves<T extends Piece> extends ChessBoardController {
      * Helping function for all pieces
      * (StraightLinesMovesLocator, diagonalLinesMovesLocator, pawnMovesLocator, knightMovesLocator, kingMovesLocator | Queen -> uses rook and bishop moves)
      */
-    private static void showLegalMove(int coordinatesXCopy, int coordinatesYCopy) {
+    private void showLegalMove(int coordinatesXCopy, int coordinatesYCopy) {
         String coordinates = getCoordinatesToString(coordinatesXCopy, coordinatesYCopy);
         showLegalMove(coordinates);
     }
+
+
+
 }
 

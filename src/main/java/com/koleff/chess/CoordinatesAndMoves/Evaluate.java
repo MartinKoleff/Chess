@@ -10,7 +10,7 @@ import static com.koleff.chess.Board.ChessBoardController.moves;
 /**
  * Still not implemented! (Coming soon...)
  */
-public class Evaluate<T extends Piece> {
+public class Evaluate {
     private int pawnPoints = 1;
     private int knightPoints = 3;
     private int bishopPoints = 3;
@@ -19,13 +19,11 @@ public class Evaluate<T extends Piece> {
     private int totalPoints = 0;
 
     /**
-     * Sums the points of each players color
+     * Sums the points of each player's color
      */
     public int calculatePoints(Colour color) {
-        moves.updateChessPiecesMap();
-
-        List<T> playerPieces = moves.chessPiecesMap.values().stream()
-                .filter(e -> ((T) e).getColor().equals(color))
+        List<Piece> playerPieces = moves.getChessPiecesMap().values().stream()
+                .filter(e -> e.getColor().equals(color))
                 .toList();
 
         playerPieces.forEach(e -> {

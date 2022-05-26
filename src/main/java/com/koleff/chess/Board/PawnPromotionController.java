@@ -6,20 +6,21 @@ import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import static com.koleff.chess.Board.ChessBoardController.board;
 import static com.koleff.chess.Board.ChessBoardController.currentPlayer;
-import static com.koleff.chess.Pieces.Pawn.pawnPromotionStage;
 
 public class PawnPromotionController implements Initializable {
     /**
      * Fields
      */
-    private static Piece promotedPawn;
+    private Piece promotedPawn;
     private static Pawn oldPawn;
+    private static Stage pawnPromotionStage;
     @FXML
     private ImageView imageViewQueen;
     @FXML
@@ -34,14 +35,18 @@ public class PawnPromotionController implements Initializable {
         oldPawn = new Pawn(pawn);
     }
 
+    public static void setStage(Stage pawnPromotionStage) {
+        PawnPromotionController.pawnPromotionStage = pawnPromotionStage;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         imageViewQueen.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-             promotedPawn = new Queen(oldPawn);
-             board.addToBoard(promotedPawn.getCoordinates(), promotedPawn);
+            promotedPawn = new Queen(oldPawn);
+            board.addToBoard(promotedPawn.getCoordinates(), promotedPawn);
 
 //             countDownLatch.countDown();
-             pawnPromotionStage.close();
+            pawnPromotionStage.close();
         });
         imageViewRook.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             promotedPawn = new Rook(oldPawn);
@@ -62,7 +67,7 @@ public class PawnPromotionController implements Initializable {
             pawnPromotionStage.close();
         });
 
-        switch (currentPlayer.getPlayerPiecesColor()){
+        switch (currentPlayer.getPlayerPiecesColor()) {
             case WHITE -> {
                 imageViewQueen.setImage(new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_queen.png")));
                 imageViewRook.setImage(new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_rook.png")));
@@ -78,3 +83,25 @@ public class PawnPromotionController implements Initializable {
         }
     }
 }
+// @FXML
+//    public void selectQueen(MouseEvent e){
+//
+//    }
+//
+//    @FXML
+//    public void selectRook(){
+//
+//    }
+//
+//    @FXML
+//    public void selectBishop(){
+//
+//    }
+//
+//    @FXML
+//    public void selectKnight(){
+//
+//    }
+//public PawnPromotionController(Stage pawnPromotionStage) { //fucks the fxml...
+//    this.pawnPromotionStage = pawnPromotionStage;
+//}
