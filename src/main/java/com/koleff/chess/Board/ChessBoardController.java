@@ -14,6 +14,7 @@ import com.koleff.chess.Player.Player;
 
 import java.net.URL;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.koleff.chess.Board.Board.paintBoard;
@@ -31,8 +32,9 @@ public class ChessBoardController implements Initializable {
     protected GridPane gridPane;
     @FXML
     protected BorderPane gameWindow;
-    public static final int cellWidth = chessBoardWidth / 8; //make non-static (give to constructors...)
-    public static final int cellHeight = chessBoardHeight / 8;
+
+    public static final int CELL_WIDTH = chessBoardWidth / 8;
+    public static final int CELL_HEIGHT = chessBoardHeight / 8;
 
     public static Player whitePlayer = new Player(Colour.WHITE);
     public static Player blackPlayer = new Player(Colour.BLACK);
@@ -54,10 +56,10 @@ public class ChessBoardController implements Initializable {
 
         paintBoard(gridPane);
 
-        board = new Board();
+        board = new Board(gridPane);
         moves = new Moves();
 
-//        board.arrangeTestingBoard();
+//        board.arrangeTestingBoard(); //Used for testing...
         board.arrangeBoard();
 
         System.out.println(currentPlayer.getPlayerPiecesColor() + "'s Player Turn.");
@@ -123,7 +125,7 @@ public class ChessBoardController implements Initializable {
             }
             piece.hasMoved = true;
 
-            //En passant setter
+            //En Passant setter
             if (piece instanceof Pawn) {
                 if (newCoordinatesY - 2 == piece.getCoordinatesY() || newCoordinatesY + 2 == piece.getCoordinatesY()) {
                     ((Pawn) piece).hasDoubleMoved = true;
@@ -135,13 +137,19 @@ public class ChessBoardController implements Initializable {
                     PawnPromotionThread pawnPromotionThread = new PawnPromotionThread(pawnPromotionRunnable);
                     pawnPromotionThread.start();
                 }
+
+                //Has done En Passant
+                if (enPassantSquare != null && enPassantSquare.equals(newCoordinates)) {
+                    ((Pawn) piece).hasDoubleMoved = false;
+                    moves.getChessPiecesMap().remove(enPassantEnemyPawnSquare);
+                }
             }
 
             try {
-               if(!((Pawn)piece).hasPromoted && piece instanceof Pawn){ //SHOULD NOT GO IN IF PROMOTING...
+                if (!((Pawn) piece).hasPromoted && piece instanceof Pawn) { //Shouldn't go in if promoting...
                     throw new ClassCastException();
                 }
-            }catch (ClassCastException e){
+            } catch (ClassCastException e) {
                 moves.getChessPiecesMap().put(newCoordinates, piece);
                 moves.getChessPiecesMap().remove(piece.getCoordinates());
 
@@ -152,18 +160,10 @@ public class ChessBoardController implements Initializable {
                 piece.setCoordinates(newCoordinates);
             }
 
-            //Has done En Passant
-            if (enPassantCoordinatesList.contains(newCoordinates) && moves.getSelectedPiece() instanceof Pawn) { //newCoordinates.equals(enPassantSquare)
-                enPassantEnemyPawnSquare = enPassantEnemyPawnCoordinatesList.stream()
-                        .filter(e -> e.charAt(0) == newCoordinatesX).collect(Collectors.joining());
-                ((Pawn) piece).hasDoubleMoved = false;
-                moves.getChessPiecesMap().remove(enPassantEnemyPawnSquare);
-                enPassantSquare = null;
-            }
 
             //If the enemy king is in check
             if (nextTurnPlayer.checkForKingChecks()) {
-                    nextTurnPlayer.isInCheck = true;
+                nextTurnPlayer.isInCheck = true;
 //                moves.calculateProtection(currentPlayer.getPlayerPiecesColor());
 
                 //Checkmate
@@ -190,28 +190,23 @@ public class ChessBoardController implements Initializable {
             moves.clearProtection(nextTurnPlayer.getPlayerPiecesColor());
 
             //Switches player, resets turns and resets En passant
-            if (currentPlayer.getPlayerPiecesColor().equals(Colour.WHITE)) {
+            if (currentPlayer.getPlayerPiecesColor().equals(Colour.WHITE)) { /**FIND DECLARATIVE WAY TO WRITE...*/
                 currentPlayer = blackPlayer;
                 nextTurnPlayer = whitePlayer;
-                blackPlayer.setPlayerTurn(true);
-                whitePlayer.setPlayerTurn(false);
-                resetEnPassantAfterTurn(Colour.BLACK);
             } else {
                 currentPlayer = whitePlayer;
                 nextTurnPlayer = blackPlayer;
-                whitePlayer.setPlayerTurn(true);
-                blackPlayer.setPlayerTurn(false);
-                resetEnPassantAfterTurn(Colour.WHITE);
             }
+            currentPlayer.setPlayerTurn(true);
+            nextTurnPlayer.setPlayerTurn(false);
             System.out.println("\n" + currentPlayer.getPlayerPiecesColor() + "'s Player Turn.");
         } else {
             System.out.println("The move you are trying to make is illegal!");
         }
 
         //Resetting variables
+        resetEnPassantAfterTurn(currentPlayer.getPlayerPiecesColor());
         moves.setSelectedPiece(null);
-        enPassantCoordinatesList.clear();
-        enPassantEnemyPawnCoordinatesList.clear();
         moves.getAttackingMovesList().clear();
         moves.getLegalMovesList().clear();
         board.updateBoard();
@@ -250,7 +245,7 @@ public class ChessBoardController implements Initializable {
     }
 
     /**
-     *  Checks if game has ended in a win for the current player (Checkmate)
+     * Checks if game has ended in a win for the current player (Checkmate)
      */
     private void checkForCheckmate() {
         isCalculatingCheckmate = true;
@@ -318,15 +313,14 @@ public class ChessBoardController implements Initializable {
 
     /**
      * Resets En Passant every turn
-     * If function throws exception -> there is a pawn that is not set as new Pawn in Board class!
      */
     public void resetEnPassantAfterTurn(Colour colour) {
-    /**CONVERT TO STREAM API....*/
         for (Piece piece : moves.getChessPiecesMap().values()) {
             if (piece instanceof Pawn && piece.getColor().equals(colour)) {
                 ((Pawn) piece).hasDoubleMoved = false;
             }
         }
+        enPassantSquare = null;
     }
 
     /**

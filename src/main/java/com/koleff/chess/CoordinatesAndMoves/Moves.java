@@ -29,8 +29,6 @@ public class Moves{
     //Move to Pawn...
     public static String enPassantSquare = null; //The square where the pawn will go after capture
     public static String enPassantEnemyPawnSquare = null; //The square of the enemy pawn
-    public static List<String> enPassantCoordinatesList = new ArrayList<>();
-    public static List<String> enPassantEnemyPawnCoordinatesList = new ArrayList<>();
 
     //Make non-static...
     public static boolean calculatingIfPieceProtectsKing = false;
@@ -446,7 +444,7 @@ public class Moves{
         int coordinatesX = calculateX(coordinates.charAt(0));
         int coordinatesY = Integer.parseInt(String.valueOf(coordinates.charAt(1)));
 
-        Circle circle = new Circle(cellWidth / 4);
+        Circle circle = new Circle(CELL_WIDTH / 4);
         circle.setFill(Color.GREEN);
 //        circle.opacityProperty().setValue(5);
         Board.getGridPane().add(circle, coordinatesX - 1, 8 - coordinatesY); //Starts counting from 1 to 8 | bottom left corner - (1,1) | upper right corner - (8,8)
@@ -467,8 +465,5 @@ public class Moves{
         String coordinates = getCoordinatesToString(coordinatesXCopy, coordinatesYCopy);
         showLegalMove(coordinates);
     }
-
-
-
 }
 

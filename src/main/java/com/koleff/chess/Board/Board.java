@@ -8,19 +8,19 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import com.koleff.chess.Pieces.*;
 
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Board extends ChessBoardController {
-    /**
-     * Fields
-     */
-    private static GridPane gridPane; //To remove...
 
-    /**
-     * Functions
-     */
+    private static GridPane gridPane;
+
+    public Board(GridPane gridPane){
+        this.gridPane = gridPane;
+    }
+
     public static GridPane getGridPane() {
         return gridPane;
     }
@@ -450,10 +450,10 @@ public class Board extends ChessBoardController {
 //        addToBoard("h8", (T) new Bishop('h', 8, Colour.WHITE));
 
         //Pawn promotion test 1
-//        addToBoard("a1", (T) new King('a', 1, Colour.WHITE));
-//        addToBoard("a8", (T) new King('a', 8, Colour.BLACK));
-//        addToBoard("c7", (T) new Pawn('c', 7, Colour.BLACK));
-//        addToBoard("h3", (T) new Pawn('h', 3, Colour.WHITE));
+        addToBoard("a1", new King('a', 1, Colour.WHITE));
+        addToBoard("a8", new King('a', 8, Colour.BLACK));
+        addToBoard("c7", new Pawn('c', 7, Colour.BLACK));
+        addToBoard("h3", new Pawn('h', 3, Colour.WHITE));
 
     }
 
@@ -483,49 +483,49 @@ public class Board extends ChessBoardController {
         switch (piece.getClass().getSimpleName()) {
             case "Rook" -> {
                 if (piece.getColor().equals(Colour.BLACK)) {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_rook.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_rook.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 } else {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_rook.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_rook.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 }
                 break;
             }
             case "Knight" -> {
                 if (piece.getColor().equals(Colour.BLACK)) {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_knight.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_knight.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 } else {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_knight.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_knight.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 }
                 break;
             }
             case "Bishop" -> {
                 if (piece.getColor().equals(Colour.BLACK)) {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_bishop.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_bishop.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 } else {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_bishop.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_bishop.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 }
                 break;
             }
             case "Queen" -> {
                 if (piece.getColor().equals(Colour.BLACK)) {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_queen.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_queen.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 } else {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_queen.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_queen.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 }
                 break;
             }
             case "King" -> {
                 if (piece.getColor().equals(Colour.BLACK)) {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_king.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_king.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 } else {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_king.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_king.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 }
                 break;
             }
             case "Pawn" -> {
                 if (piece.getColor().equals(Colour.BLACK)) {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_pawn.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_pawn.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 } else {
-                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_pawn.png"), cellWidth, cellHeight, false, false);
+                    image = new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/white_pawn.png"), CELL_WIDTH, CELL_HEIGHT, false, false);
                 }
                 break;
             }
@@ -547,7 +547,7 @@ public class Board extends ChessBoardController {
     /**
      * Paints the board in 2 colours
      */
-    public static void paintBoard() {
+    public static void paintBoard() { //To implement CSS for drawing the board... (custom boards coming soon)
         Rectangle rectangle;
         boolean lastSquareWasWhite = true;
 
@@ -559,10 +559,10 @@ public class Board extends ChessBoardController {
             }
             for (int i = 0; i < gridPane.getColumnCount(); i++) {
                 if (lastSquareWasWhite) {
-                    rectangle = new Rectangle(cellWidth, cellHeight + 1, Color.valueOf("#996633"));//Coffee Brown //Color.BLACK
+                    rectangle = new Rectangle(CELL_WIDTH, CELL_HEIGHT + 1, Color.valueOf("#996633"));//Coffee Brown //Color.BLACK
                     lastSquareWasWhite = false;
                 } else {
-                    rectangle = new Rectangle(cellWidth, cellHeight + 1, Color.valueOf("#F8F2DA")); //Creme White //Color.White
+                    rectangle = new Rectangle(CELL_WIDTH, CELL_HEIGHT + 1, Color.valueOf("#F8F2DA")); //Creme White //Color.White
                     lastSquareWasWhite = true;
                 }
                 gridPane.add(rectangle, i, j);
@@ -577,7 +577,7 @@ public class Board extends ChessBoardController {
      */
     public void updateBoard() {
         paintBoard();
-        if (moves.getSelectedPiece() != null) { //hasSelectedPiece
+        if (moves.getSelectedPiece() != null) {
             clearGridPane();
         }
         for (Piece piece : moves.getChessPiecesMap().values()) {

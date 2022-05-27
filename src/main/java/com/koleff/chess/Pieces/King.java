@@ -1,7 +1,5 @@
 package com.koleff.chess.Pieces;
 
-import java.util.LinkedHashMap;
-
 import static com.koleff.chess.Board.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
@@ -148,7 +146,7 @@ public class King extends Piece {
      * - Check if the squares are also not in attackingMovesList (between a1-kingCoordinates for Short castle
      * and kingCoordinates-h1  for Long castle) (a1 and h1 not included)
      */
-    public  <T extends Piece> void checkForCastling(Colour piecesColor) {
+    public void checkForCastling(Colour piecesColor) {
         moves.calculateAttackingMoves(nextTurnPlayer.getPlayerPiecesColor());
 
         if (moves.castlingMovesList.isEmpty()) {
