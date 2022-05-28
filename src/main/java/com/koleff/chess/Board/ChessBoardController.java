@@ -5,6 +5,7 @@ import com.koleff.chess.Threads.PawnPromotionThread;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -14,10 +15,7 @@ import com.koleff.chess.Player.Player;
 
 import java.net.URL;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import static com.koleff.chess.Board.Board.paintBoard;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.*;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 import static com.koleff.chess.MainMenu.Controller.chessBoardHeight;
@@ -30,8 +28,12 @@ public class ChessBoardController implements Initializable {
      */
     @FXML
     protected GridPane gridPane;
+
     @FXML
     protected BorderPane gameWindow;
+
+    @FXML
+    private Label clockLabel;
 
     public static final int CELL_WIDTH = chessBoardWidth / 8;
     public static final int CELL_HEIGHT = chessBoardHeight / 8;
@@ -53,8 +55,6 @@ public class ChessBoardController implements Initializable {
      */
     public void initialize(URL location, ResourceBundle resources) {
         gridPane.setAlignment(Pos.CENTER_LEFT);
-
-        paintBoard(gridPane);
 
         board = new Board(gridPane);
         moves = new Moves();

@@ -3,8 +3,11 @@ package com.koleff.chess.Board;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import com.koleff.chess.Pieces.*;
 
@@ -19,6 +22,8 @@ public class Board extends ChessBoardController {
 
     public Board(GridPane gridPane){
         this.gridPane = gridPane;
+
+        paintBoard();
     }
 
     public static GridPane getGridPane() {
@@ -73,7 +78,7 @@ public class Board extends ChessBoardController {
     /**
      * Used to test different scenarios
      */
-    protected void arrangeTestingBoard() {
+    private void arrangeTestingBoard() {
         //Rook Testing
 //        addToBoard("a8", new Piece('a', 8, Colour.BLACK, Type.ROOK));
 //        addToBoard("e4", new Piece('e', 4, Colour.BLACK, Type.ROOK));
@@ -476,7 +481,7 @@ public class Board extends ChessBoardController {
     /**
      * Shows the pieces in the GUI
      */
-    protected void showPieceToBoard(Piece piece) {
+    private void showPieceToBoard(Piece piece) {
         Image image = null;
         ImageView imageView;
 
@@ -536,38 +541,31 @@ public class Board extends ChessBoardController {
     }
 
     /**
-     * Called when first painting the board
+     * Paints the board in 2 colours (using CSS)
      */
-    public static void paintBoard(GridPane startingGridPane) {
-        gridPane = startingGridPane;
-
-        paintBoard();
-    }
-
-    /**
-     * Paints the board in 2 colours
-     */
-    public static void paintBoard() { //To implement CSS for drawing the board... (custom boards coming soon)
+    private void paintBoard() {
         Rectangle rectangle;
         boolean lastSquareWasWhite = true;
+        gridPane.getStyleClass().add("/com.koleff.chess/chessBoard.css");
 
-        for (int j = 0; j < gridPane.getRowCount(); j++) {
-            if (lastSquareWasWhite) { // Last square of each row is the same as the first in the new row -> no reset needed
-                lastSquareWasWhite = false;
-            } else {
-                lastSquareWasWhite = true;
-            }
-            for (int i = 0; i < gridPane.getColumnCount(); i++) {
-                if (lastSquareWasWhite) {
-                    rectangle = new Rectangle(CELL_WIDTH, CELL_HEIGHT + 1, Color.valueOf("#996633"));//Coffee Brown //Color.BLACK
-                    lastSquareWasWhite = false;
-                } else {
-                    rectangle = new Rectangle(CELL_WIDTH, CELL_HEIGHT + 1, Color.valueOf("#F8F2DA")); //Creme White //Color.White
-                    lastSquareWasWhite = true;
-                }
-                gridPane.add(rectangle, i, j);
-            }
-        }
+
+//        for (int j = 0; j < gridPane.getRowCount(); j++) {
+//            if (lastSquareWasWhite) { // Last square of each row is the same as the first in the new row -> no reset needed
+//                lastSquareWasWhite = false;
+//            } else {
+//                lastSquareWasWhite = true;
+//            }
+//            for (int i = 0; i < gridPane.getColumnCount(); i++) {
+//                if (lastSquareWasWhite) {
+//                    rectangle = new Rectangle(CELL_WIDTH, CELL_HEIGHT, Color.valueOf("#996633"));//Coffee Brown //Color.BLACK
+//                    lastSquareWasWhite = false;
+//                } else {
+//                    rectangle = new Rectangle(CELL_WIDTH, CELL_HEIGHT, Color.valueOf("#F8F2DA")); //Creme White //Color.White
+//                    lastSquareWasWhite = true;
+//                }
+//                gridPane.add(rectangle, i, j);
+//            }
+//        }
     }
 
 
@@ -597,7 +595,7 @@ public class Board extends ChessBoardController {
 //        arrangeTestingBoard();
     }
 
-    private static void clearGridPane() {
+    private void clearGridPane() {
         List<Node> children = gridPane.getChildren().stream()
                 .filter(e -> e instanceof ImageView)
                 .collect(Collectors.toList());

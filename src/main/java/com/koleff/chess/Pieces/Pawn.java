@@ -1,6 +1,6 @@
 package com.koleff.chess.Pieces;
 
-import com.koleff.chess.Board.PawnPromotionController;
+import com.koleff.chess.PawnPromotionWindow.PawnPromotionController;
 import com.koleff.chess.CoordinatesAndMoves.Coordinates;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

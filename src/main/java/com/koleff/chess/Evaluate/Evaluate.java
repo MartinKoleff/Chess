@@ -1,4 +1,4 @@
-package com.koleff.chess.CoordinatesAndMoves;
+package com.koleff.chess.Evaluate;
 
 import com.koleff.chess.Pieces.Colour;
 import com.koleff.chess.Pieces.Piece;

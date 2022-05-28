@@ -8,10 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
 
 import static com.koleff.chess.MainMenu.Main.mainMenuStage;
@@ -31,7 +29,7 @@ public class Controller {
     public void openChessBoard(ActionEvent actionEvent) {
         Parent chessBoardRoot = null;
         try {
-            chessBoardRoot = FXMLLoader.load(ChessBoardController.class.getResource("/com.koleff.chess/chessBoard.fxml")); ///com.koleff.chess/
+            chessBoardRoot = FXMLLoader.load(ChessBoardController.class.getResource("/com.koleff.chess/chessBoardMenu.fxml")); ///com.koleff.chess/
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,7 +38,7 @@ public class Controller {
         chessBoardStage.setTitle("Chess Board");
         chessBoardStage.getIcons().add(new Image(getClass().getResourceAsStream("/com.koleff.chess/pictures/black_king.png")));
 
-        chessBoardStage.setScene(new Scene(chessBoardRoot, chessBoardWidth, chessBoardHeight));
+        chessBoardStage.setScene(new Scene(chessBoardRoot, 1220, 820));
         chessBoardStage.setResizable(false);
 
         chessBoardStage.show();

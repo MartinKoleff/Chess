@@ -1,6 +1,7 @@
 package com.koleff.chess.Player;
 
 import com.koleff.chess.Pieces.*;
+import com.koleff.chess.Timer.Clock;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,17 +14,20 @@ public class Player {
     /**
      * Fields
      */
-    private static boolean isPlayerTurn = false;
-    private Colour playerPiecesColor;
-
     private String playerName;
+
+    private boolean isPlayerTurn = false;
+    private Colour playerPiecesColor;
     private LinkedHashMap<String, Piece> playerPieces = new LinkedHashMap<>();
+
+    //Encapsulate...
     public boolean canCastle = false;
     public boolean hasCastled = false;
     public boolean isCheckmated = false;
     public boolean isStalemated = false;
     public boolean isInCheck = false;
 
+    private Clock clock;
     /**
      * Functions
      */
@@ -32,6 +36,28 @@ public class Player {
      * Constructor
      */
     public Player(Colour playerPiecesColor) {
+        this.playerPiecesColor = playerPiecesColor;
+    }
+
+    /**
+     * Getters
+     */
+    public boolean getPlayerTurn() {
+        return isPlayerTurn;
+    }
+
+    /**
+     * Setters
+     */
+    public void setPlayerTurn(boolean isPlayerTurn) {
+        this.isPlayerTurn = isPlayerTurn;
+    }
+
+    public Colour getPlayerPiecesColor() {
+        return playerPiecesColor;
+    }
+
+    public void setPlayerPiecesColor(Colour playerPiecesColor) {
         this.playerPiecesColor = playerPiecesColor;
     }
 
@@ -48,7 +74,7 @@ public class Player {
 
     public List<Piece> getPieces() {
         return moves.getChessPiecesMap().values().stream()
-                .filter(e -> e.getColor().equals(playerPiecesColor)) //.filter(e -> ((T) e).getColor().equals(playerPiecesColor))
+                .filter(e -> e.getColor().equals(playerPiecesColor))
                 .toList();
     }
 
@@ -84,7 +110,7 @@ public class Player {
         List<String> attackingMovesListTemp = new ArrayList(moves.getAttackingMovesList());
 
         String playerColor = this.getPlayerPiecesColor().toString().charAt(0) + this.getPlayerPiecesColor().toString().substring(1).toLowerCase();
-        if (moves.calculateAttackingMoves(getNextTurnPlayer(this).getPlayerPiecesColor()).contains(kingCoordinates)) { //BUGGING HERE...
+        if (moves.calculateAttackingMoves(this.getNextTurnPlayer().getPlayerPiecesColor()).contains(kingCoordinates)) {
             if (!calculatingIfPieceProtectsKing && !isCalculatingKingDiscoveryFromAllyPiece) {
                 System.out.printf("%s's king is in check!\n", playerColor);
                 System.out.println();
@@ -93,9 +119,6 @@ public class Player {
             calculatingIfPieceProtectsKing = false;
             return true;
         }
-//        else if (kingCoordinates.isEmpty()) {
-//            System.out.printf("%s's king is missing...\n", playerColor);
-//        }
         moves.setAttackingMovesList(attackingMovesListTemp);
         return false;
     }
@@ -103,34 +126,11 @@ public class Player {
     /**
      * Returns the next turn player
      */
-    private Player getNextTurnPlayer(Player currentPlayer) {
-        if (currentPlayer.getPlayerPiecesColor().equals(Colour.WHITE)) {
+    private Player getNextTurnPlayer() {
+        if (this.getPlayerPiecesColor().equals(Colour.WHITE)) {
             return blackPlayer;
         } else {
             return whitePlayer;
         }
     }
-
-    /**
-     * Getters
-     */
-    public static boolean getPlayerTurn() {
-        return isPlayerTurn;
-    }
-
-    /**
-     * Setters
-     */
-    public static void setPlayerTurn(boolean isPlayerTurn) {
-        Player.isPlayerTurn = isPlayerTurn;
-    }
-
-    public Colour getPlayerPiecesColor() {
-        return playerPiecesColor;
-    }
-
-    public void setPlayerPiecesColor(Colour playerPiecesColor) {
-        this.playerPiecesColor = playerPiecesColor;
-    }
-
 }

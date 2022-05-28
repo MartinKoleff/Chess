@@ -42,6 +42,11 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -63,7 +68,7 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.koleff.chess/com.koleff.chess.MainMenu.Main</mainClass>
+                        <mainClass><MainMenu class="Main"></MainMenu></mainClass> <!--com.koleff.chess/com.koleff.chess.MainMenu.Main-->
                         </configuration>
                     </execution>
                 </executions>

@@ -1,4 +1,4 @@
-package com.koleff.chess.Board;
+package com.koleff.chess.PawnPromotionWindow;
 
 import com.koleff.chess.Pieces.*;
 import javafx.fxml.FXML;
