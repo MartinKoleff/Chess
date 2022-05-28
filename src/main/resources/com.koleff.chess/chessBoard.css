@@ -1,17 +1,13 @@
-.game-grid {
-    -fx-background-color: white ;
-    -fx-padding: 10 ;
+
+#black_rectangle{
+    /*-fx-background-color: black;*/
+    /*-fx-fill: Black;*/
+    -fx-fill: Red;
 }
-.game-grid-cell {
-    -fx-background-color: black, white ;
-    -fx-background-insets: 0, 0 1 1 0 ;
+#white_rectangle{
+    /*-fx-background-color: white;*/
+    -fx-fill: White;
 }
-.game-grid-cell.first-row {
-    -fx-background-insets: 0, 1 1 1 0 ;
-}
-.game-grid-cell.first-column {
-    -fx-background-insets: 0, 0 1 1 1 ;
-}
-.game-grid-cell.first-row.first-column {
-    -fx-background-insets: 0, 1 ;
+.grid{
+    -fx-background-color: red;
 }

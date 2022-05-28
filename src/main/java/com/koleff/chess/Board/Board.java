@@ -20,7 +20,7 @@ public class Board extends ChessBoardController {
 
     private static GridPane gridPane;
 
-    public Board(GridPane gridPane){
+    public Board(GridPane gridPane) {
         this.gridPane = gridPane;
 
         paintBoard();
@@ -546,26 +546,30 @@ public class Board extends ChessBoardController {
     private void paintBoard() {
         Rectangle rectangle;
         boolean lastSquareWasWhite = true;
-        gridPane.getStyleClass().add("/com.koleff.chess/chessBoard.css");
 
+        //Working CSS...
+//        gridPane.getStyleClass().add("grid");
+//        rectangle.setId("black_rectangle");
 
-//        for (int j = 0; j < gridPane.getRowCount(); j++) {
-//            if (lastSquareWasWhite) { // Last square of each row is the same as the first in the new row -> no reset needed
-//                lastSquareWasWhite = false;
-//            } else {
-//                lastSquareWasWhite = true;
-//            }
-//            for (int i = 0; i < gridPane.getColumnCount(); i++) {
-//                if (lastSquareWasWhite) {
-//                    rectangle = new Rectangle(CELL_WIDTH, CELL_HEIGHT, Color.valueOf("#996633"));//Coffee Brown //Color.BLACK
-//                    lastSquareWasWhite = false;
-//                } else {
-//                    rectangle = new Rectangle(CELL_WIDTH, CELL_HEIGHT, Color.valueOf("#F8F2DA")); //Creme White //Color.White
-//                    lastSquareWasWhite = true;
-//                }
-//                gridPane.add(rectangle, i, j);
-//            }
-//        }
+        for (int j = 0; j < gridPane.getRowCount(); j++) {
+            if (lastSquareWasWhite) { // Last square of each row is the same as the first in the new row -> no reset needed
+                lastSquareWasWhite = false;
+            } else {
+                lastSquareWasWhite = true;
+            }
+            for (int i = 0; i < gridPane.getColumnCount(); i++) {
+                rectangle = new Rectangle(CELL_WIDTH, CELL_HEIGHT);
+
+                if (lastSquareWasWhite) {
+                    lastSquareWasWhite = false;
+                    rectangle.setId("black_rectangle");
+                } else {
+                    lastSquareWasWhite = true;
+                    rectangle.setId("white_rectangle");
+                }
+                gridPane.add(rectangle, i, j);
+            }
+        }
     }
 
 

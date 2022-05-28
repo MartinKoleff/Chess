@@ -23,26 +23,28 @@
    <center>
       <AnchorPane prefHeight="820.0" prefWidth="820.0" BorderPane.alignment="CENTER">
          <children>
-              <GridPane fx:id="gridPane" gridLinesVisible="true" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" onMouseClicked="#selectPiece" prefHeight="800.0" prefWidth="800.0">
+              <GridPane fx:id="gridPane" gridLinesVisible="true" layoutX="10.0" layoutY="10.0"
+                        maxHeight="-Infinity" maxWidth="-Infinity" onMouseClicked="#selectPiece" prefHeight="800.0" prefWidth="800.0"
+                        stylesheets="@chessBoard.css">
                   <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints prefWidth="100.0" />
+                      <ColumnConstraints prefWidth="100.0" />
+                      <ColumnConstraints prefWidth="100.0" />
+                      <ColumnConstraints prefWidth="100.0" />
+                      <ColumnConstraints prefWidth="100.0" />
+                      <ColumnConstraints prefWidth="100.0" />
+                      <ColumnConstraints prefWidth="100.0" />
+                      <ColumnConstraints prefWidth="100.0" />
                   </columnConstraints>
                   <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints prefHeight="100.0" />
+                      <RowConstraints prefHeight="100.0" />
+                      <RowConstraints prefHeight="100.0" />
+                      <RowConstraints prefHeight="100.0" />
+                      <RowConstraints prefHeight="100.0" />
+                      <RowConstraints prefHeight="100.0" />
+                      <RowConstraints prefHeight="100.0" />
+                      <RowConstraints prefHeight="100.0" />
                   </rowConstraints>
               </GridPane>
          </children>
