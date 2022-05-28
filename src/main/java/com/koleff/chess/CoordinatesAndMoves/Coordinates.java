@@ -3,6 +3,9 @@ package com.koleff.chess.CoordinatesAndMoves;
 import com.koleff.chess.Board.Board;
 import javafx.scene.input.MouseEvent;
 
+import static com.koleff.chess.Board.ChessBoardController.CELL_WIDTH;
+import static com.koleff.chess.Board.ChessBoardController.board;
+
 public class Coordinates{
     /**
      * Helping functions for locatePiece()
@@ -22,31 +25,29 @@ public class Coordinates{
     public static char calculateX(double coordinatesX) {
         double coordinates;
 
-        //If called with MouseEvent
+        //If called with Mouse Event
         if (coordinatesX > 8) { //coordinatesX / 100 >= 1
             coordinates = coordinatesX;
         } else {
             coordinates = (coordinatesX) * 100;
         }
 
-        double gridPaneWidth = Board.getGridPane().getWidth();
-        double widthPerSquare = gridPaneWidth / 8;
 
-        if (coordinates <= widthPerSquare && coordinates > 8 || coordinates == 0) { //8 -> width of the board = 8
+        if (coordinates <= CELL_WIDTH && coordinates >= 0) {
             return 'a';
-        } else if (coordinates > widthPerSquare && coordinates <= widthPerSquare * 2) {
+        } else if (coordinates > CELL_WIDTH && coordinates <= CELL_WIDTH * 2) {
             return 'b';
-        } else if (coordinates > widthPerSquare * 2 && coordinates <= widthPerSquare * 3) {
+        } else if (coordinates > CELL_WIDTH * 2 && coordinates <= CELL_WIDTH * 3) {
             return 'c';
-        } else if (coordinates > widthPerSquare * 3 && coordinates <= widthPerSquare * 4) {
+        } else if (coordinates > CELL_WIDTH * 3 && coordinates <= CELL_WIDTH * 4) {
             return 'd';
-        } else if (coordinates > widthPerSquare * 4 && coordinates <= widthPerSquare * 5) {
+        } else if (coordinates > CELL_WIDTH * 4 && coordinates <= CELL_WIDTH * 5) {
             return 'e';
-        } else if (coordinates > widthPerSquare * 5 && coordinates <= widthPerSquare * 6) {
+        } else if (coordinates > CELL_WIDTH * 5 && coordinates <= CELL_WIDTH * 6) {
             return 'f';
-        } else if (coordinates > widthPerSquare * 6 && coordinates <= widthPerSquare * 7) {
+        } else if (coordinates > CELL_WIDTH * 6 && coordinates <= CELL_WIDTH * 7) {
             return 'g';
-        } else if (coordinates > widthPerSquare * 7 && coordinates <= widthPerSquare * 8) {
+        } else if (coordinates > CELL_WIDTH * 7 && coordinates <= CELL_WIDTH * 8) {
             return 'h';
         } else {
             try {

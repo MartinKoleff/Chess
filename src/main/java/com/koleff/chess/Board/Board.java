@@ -1,11 +1,12 @@
 package com.koleff.chess.Board;
 
+import com.koleff.chess.CoordinatesAndMoves.Coordinates;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -544,30 +545,37 @@ public class Board extends ChessBoardController {
      * Paints the board in 2 colours (using CSS)
      */
     private void paintBoard() {
-        Rectangle rectangle;
+        Pane pane;
         boolean lastSquareWasWhite = true;
-
-        //Working CSS...
-//        gridPane.getStyleClass().add("grid");
-//        rectangle.setId("black_rectangle");
+        String coordinatesSquare;
+        Label coordinatesLabel;
 
         for (int j = 0; j < gridPane.getRowCount(); j++) {
-            if (lastSquareWasWhite) { // Last square of each row is the same as the first in the new row -> no reset needed
+            if (lastSquareWasWhite) { // Last square of each row is the same as the first in the new row - no reset needed
                 lastSquareWasWhite = false;
             } else {
                 lastSquareWasWhite = true;
             }
+
             for (int i = 0; i < gridPane.getColumnCount(); i++) {
-                rectangle = new Rectangle(CELL_WIDTH, CELL_HEIGHT);
+                pane = new Pane();
+                pane.setPrefWidth(100);
+                pane.setPrefHeight(100);
 
                 if (lastSquareWasWhite) {
                     lastSquareWasWhite = false;
-                    rectangle.setId("black_rectangle");
+                    pane.setId("black_rectangle");
                 } else {
                     lastSquareWasWhite = true;
-                    rectangle.setId("white_rectangle");
+                    pane.setId("white_rectangle");
                 }
-                gridPane.add(rectangle, i, j);
+
+                coordinatesSquare = Coordinates.calculateX(i + 1) + "" + (8 - j);
+                coordinatesLabel = new Label(coordinatesSquare);
+
+                coordinatesLabel.setId("coordinates_label");
+                pane.getChildren().add(coordinatesLabel);
+                gridPane.add(pane, i, j);
             }
         }
     }
@@ -609,3 +617,15 @@ public class Board extends ChessBoardController {
         }
     }
 }
+
+//Working CSS...
+//        gridPane.getStyleClass().add("grid");
+//        rectangle.setId("black_rectangle");
+
+//Find a way to add css to specific gridPane cell without it having any node inside...
+//        gridPane.getStyleClass().add("grid");
+//                coordinatesLabel.getStyleClass().add("Label"); //Should auto set...
+//                coordinatesLabel.getStylesheets().add("/com.koleff.chess/chessBoard.css");
+//                coordinatesLabel.setPadding(new Insets(80, 0, 0, 1));
+//                StackPane.setMargin(coordinatesLabel, new Insets(5, 0, 0, 0));
+//                GridPane.setMargin(, new Insets(5, 0, 0, 0)); //label is inside pane...

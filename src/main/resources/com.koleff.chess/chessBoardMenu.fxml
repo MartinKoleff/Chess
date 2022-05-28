@@ -12,7 +12,8 @@
    <right>
       <AnchorPane prefHeight="1000.0" prefWidth="400.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="clockLabel" layoutX="142.0" layoutY="107.0" text="00:00">
+            <Label fx:id="clockLabel" layoutX="142.0" layoutY="107.0"
+                   styleClass="Label" stylesheets="@chessBoard.css" text="00:00">
                <font>
                   <Font size="50.0" />
                </font>
@@ -23,9 +24,7 @@
    <center>
       <AnchorPane prefHeight="820.0" prefWidth="820.0" BorderPane.alignment="CENTER">
          <children>
-              <GridPane fx:id="gridPane" gridLinesVisible="true" layoutX="10.0" layoutY="10.0"
-                        maxHeight="-Infinity" maxWidth="-Infinity" onMouseClicked="#selectPiece" prefHeight="800.0" prefWidth="800.0"
-                        stylesheets="@chessBoard.css">
+              <GridPane fx:id="gridPane" gridLinesVisible="true" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" onMouseClicked="#selectPiece" prefHeight="800.0" prefWidth="800.0" stylesheets="@chessBoard.css">
                   <columnConstraints>
                       <ColumnConstraints prefWidth="100.0" />
                       <ColumnConstraints prefWidth="100.0" />
@@ -46,6 +45,9 @@
                       <RowConstraints prefHeight="100.0" />
                       <RowConstraints prefHeight="100.0" />
                   </rowConstraints>
+<!--                  <StackPane.margin>-->
+<!--                      <Insets left="50.0" />-->
+<!--                  </StackPane.margin>-->
               </GridPane>
          </children>
       </AnchorPane>

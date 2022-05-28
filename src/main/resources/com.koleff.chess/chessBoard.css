@@ -1,13 +1,23 @@
 
 #black_rectangle{
-    /*-fx-background-color: black;*/
-    /*-fx-fill: Black;*/
-    -fx-fill: Red;
+    -fx-background-color: Red;
 }
 #white_rectangle{
-    /*-fx-background-color: white;*/
-    -fx-fill: White;
+    -fx-background-color: Blue;
 }
-.grid{
-    -fx-background-color: red;
+
+#coordinates_label{
+    -fx-padding: 80 0 0 1;
 }
+.Label{
+    -fx-text-fill: Red;
+}
+/*.StackPane{*/
+/*    -fx-padding: 5 5 5 5;*/
+/*}*/
+/*.grid{*/
+/*    -fx-background-color: red;*/
+/*}*/
+
+/*-fx-background-color: black;  !*works for nodes (pane)*!*/
+/*-fx-fill: Black;*/         /*works for rectangle*/
