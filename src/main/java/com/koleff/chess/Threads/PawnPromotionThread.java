@@ -4,7 +4,6 @@ public class PawnPromotionThread extends Thread {
     private PawnPromotionRunnable runnable;
     private boolean stopRequest;
 
-
     public PawnPromotionThread(PawnPromotionRunnable runnable) {
         this.runnable = runnable;
     }

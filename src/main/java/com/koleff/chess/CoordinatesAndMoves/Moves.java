@@ -17,13 +17,13 @@ import static com.koleff.chess.Board.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.calculateX;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 
-public class Moves{
+public class Moves {
     /**
      * Fields
      */
-    private Map<String, Piece> chessPiecesMap = new LinkedHashMap(); //<K> String -> Coordinates (example: e4) | <V> Piece -> The Piece that is on the <K> coordinates
-    private List<String> legalMovesList = new ArrayList<>(); //String -> coordinates
-    private List<String> attackingMovesList = new ArrayList<>(); //String -> coordinates
+    private Map<String, Piece> chessPiecesMap = new LinkedHashMap();//String - coordinate | Piece - the piece with that coordinates
+    private List<String> legalMovesList = new ArrayList<>(); //String - coordinates
+    private List<String> attackingMovesList = new ArrayList<>(); //String - coordinates
     private Piece selectedPiece = null;
 
     public static String enPassantSquare = null; //The square where the pawn will go after capture
@@ -38,11 +38,11 @@ public class Moves{
     public static boolean isCalculatingStalemate = false;
     public static boolean hasToBreak = false;
 
-    public List<String> castlingMovesList = new ArrayList<>();
+    public List<String> castlingMovesList = new ArrayList<>(); //String - coordinates
     private List<CalculatingAttackingMovesThread> calculateAttackingMovesThreadsList = new ArrayList<>();
 
     /**
-     * Functions
+     * Getters & Setters
      */
     public List<String> getAttackingMovesList() {
         return attackingMovesList;
@@ -67,9 +67,13 @@ public class Moves{
     public void setSelectedPiece(Piece selectedPiece) {
         this.selectedPiece = selectedPiece;
     }
+
+
     /**
-     * Helping function for when King is in check
-     * Calculates all attacking moves of the enemy player / the color given
+     * Calculates all attacking moves of the player with the color given
+     *
+     * @param pieceColor player pieces color
+     * @return list with all attacking moves of the player with the color given
      */
     public List<String> calculateAttackingMoves(Colour pieceColor) {
         attackingMovesList.clear();
@@ -78,7 +82,7 @@ public class Moves{
         List<Piece> playerPieces;
         Piece selectedPieceTemp = selectedPiece;
 
-        playerPieces =  chessPiecesMap.values().stream()
+        playerPieces = chessPiecesMap.values().stream()
                 .filter(e -> e.getColor().equals(pieceColor))
                 .collect(Collectors.toList());
 
@@ -108,14 +112,17 @@ public class Moves{
 
 
     /**
-     * Calculates the protection of the enemy pieces each turn
+     * Calculates the protection of the player pieces with the color given
+     * - for all player pieces is calculated what pieces each one protects
+     *
+     * @param pieceColor player pieces color
      */
-    public void calculateProtection(Colour color) {
+    public void calculateProtection(Colour pieceColor) {
         List<Piece> playerPieces;
         Piece selectedPieceTemp = selectedPiece;
 
         playerPieces = chessPiecesMap.values().stream()
-                .filter(e -> e.getColor().equals(color))
+                .filter(e -> e.getColor().equals(pieceColor))
                 .collect(Collectors.toList());
 
         isCalculatingProtection = true;
@@ -127,7 +134,11 @@ public class Moves{
     }
 
     /**
-     * Helping function for calculateAttackingMoves() and calculateProtection()
+     * Helping function
+     *
+     * @param playerPieces all pieces of a player
+     * @see #calculateAttackingMoves(Colour)
+     * @see #calculateProtection(Colour)
      */
     private void calculateMoves(List<Piece> playerPieces) {
         Piece selectedPieceTemp = selectedPiece;
@@ -147,14 +158,16 @@ public class Moves{
     }
 
     /**
-     * Clears the protection field for the enemy pieces at the start of every turn
+     * Clears the isProtected field for all pieces of the player with the given color
+     *
+     * @param pieceColor player pieces color
      */
-    public void clearProtection(Colour color) {
+    public void clearProtection(Colour pieceColor) {
         System.out.println();
         List<Piece> playerPieces;
 
         playerPieces = chessPiecesMap.values().stream()
-                .filter(e -> e.getColor().equals(color))
+                .filter(e -> e.getColor().equals(pieceColor))
                 .collect(Collectors.toList());
 
         for (Piece piece : playerPieces) {
@@ -166,11 +179,16 @@ public class Moves{
     }
 
     /**
-     * Helping function for the legal moves functions and moves locator functions
-     * Returns boolean based on if the coordinates are legal / illegal move for the selected piece!
+     * The brain of the chess engine
+     * - checks if a move is legal
+     * - checks if the selected piece can move to the coordinates given
+     *
+     * @param coordinates the coordinates where the selected piece or a chosen piece wants to go
+     * @return false if the coordinates are legal (because it is not illegal move)
+     * @see #selectedPiece
      */
     public boolean checkIfMoveIsIllegal(String coordinates) {
-        //If coordinates are invalid. (Only used with the King)
+        //If coordinates are invalid.
         if (coordinates.equals("") || hasToBreak) {
             if (selectedPiece instanceof King || selectedPiece instanceof Pawn) {
                 hasToBreak = false;
@@ -181,7 +199,7 @@ public class Moves{
         int coordinatesX = calculateX(coordinates.charAt(0));
         int coordinatesY = Integer.parseInt(String.valueOf(coordinates.charAt(1)));
 
-        //Checks if the ally Piece gets moved the king gets discovered
+        //Checks if the piece gets moved the ally king gets discovered
         if (!isCalculatingAttackingMoves && !isCalculatingProtection) {
             if (isCalculatingCheckmate || isCalculatingStalemate) {
                 if (checkIfKingCanBeDiscovered(coordinates, nextTurnPlayer)) {
@@ -200,17 +218,17 @@ public class Moves{
         }
 
         try {
-            if (!chessPiecesMap.get(coordinates).getColor().equals(selectedPiece.getColor())) { //Check if the found piece is the same color as the selected piece (otherwise its the last legal move!)
+            if (!chessPiecesMap.get(coordinates).getColor().equals(selectedPiece.getColor())) { //Check if the found piece is the same color as the selected piece otherwise it's the last legal move
                 if (!isCalculatingAttackingMoves && !isCalculatingProtection) {
                     if (!nextTurnPlayer.isInCheck) { //If king is not in check logic...
                         if (chessPiecesMap.get(coordinates).getIsProtected() && selectedPiece instanceof King) { //If king is not in check but is trying to get a piece that is protected by other piece from the same color
                             return true;
-                        } else if (selectedPiece instanceof Pawn && selectedPiece.getCoordinatesXInt() != coordinatesX) { //Pawn logic
+                        } else if (selectedPiece instanceof Pawn && selectedPiece.getCoordinatesXInt() != coordinatesX) { //Pawn logic...
                             showLegalMove(coordinates);
                             return false;
                         } else if (!(selectedPiece instanceof Pawn)) {
                             showLegalMove(coordinates);
-                            hasToBreak = true; //(needed for the default pieces when protecting)
+                            hasToBreak = true; //Needed for the default pieces when protecting
                             return false;
                         }
                         hasToBreak = true;
@@ -224,13 +242,17 @@ public class Moves{
                                 return checkIfPieceDefendsCheck(coordinates);
                             }
                         } catch (RuntimeException e) {
-                            return true; //(there is no piece on the coordinates but its attacked)
+                            return true; //There is no piece on the coordinates but its attacked
                         }
                     }
                 } else {
                     if (isCalculatingProtection) {
                         if (chessPiecesMap.get(coordinates).getColor().equals(selectedPiece.getColor())) {
-                            System.out.printf("%s %s is protecting %s %s with player color -> %s!!\n", selectedPiece.getClass().getSimpleName(), selectedPiece.getCoordinates(), chessPiecesMap.get(coordinates).getClass().getSimpleName(), coordinates, selectedPiece.getColor());
+                            System.out.printf("%s %s is protecting %s %s with player color -> %s!!\n",
+                                    selectedPiece.getClass().getSimpleName(),
+                                    selectedPiece.getCoordinates(),
+                                    chessPiecesMap.get(coordinates).getClass().getSimpleName(),
+                                    coordinates, selectedPiece.getColor());
                             chessPiecesMap.get(coordinates).setIsProtected(true);
                             hasToBreak = true;
                             return true;
@@ -238,15 +260,19 @@ public class Moves{
                         return false;
                     }
                     attackingMovesList.add(coordinates);
-                    if (chessPiecesMap.get(coordinates) instanceof King) { //Adds the whole diagonal... (King can't be on the same line as Rook/Queen)
+                    if (chessPiecesMap.get(coordinates) instanceof King) { //Adds the whole diagonal... King can't be on the same line as Rook/Queen
                         return false;
                     }
                 }
-                hasToBreak = true; //(used for blocking check)
+                hasToBreak = true; //Used for blocking check
                 return true;
             }
-            if (isCalculatingProtection) {//selectedPiece protects the piece with current coordinates //isCalculatingAttackingMoves && !isCalculatingKingDiscoveryFromAllyPiece ||
-                System.out.printf("%s %s is protecting %s %s with player color -> %s!\n", selectedPiece.getClass().getSimpleName(), selectedPiece.getCoordinates(), chessPiecesMap.get(coordinates).getClass().getSimpleName(), coordinates, selectedPiece.getColor());
+            if (isCalculatingProtection) {//selectedPiece protects the piece with current coordinates
+                System.out.printf("%s %s is protecting %s %s with player color -> %s!\n",
+                        selectedPiece.getClass().getSimpleName(),
+                        selectedPiece.getCoordinates(),
+                        chessPiecesMap.get(coordinates).getClass().getSimpleName(),
+                        coordinates, selectedPiece.getColor());
                 (chessPiecesMap.get(coordinates)).setIsProtected(true);
                 hasToBreak = true;
                 return true;
@@ -262,7 +288,7 @@ public class Moves{
                     if (!attackingMovesList.contains(coordinates) || !(selectedPiece instanceof King)) {
                         showLegalMove(coordinates);
                     }
-                } else if (nextTurnPlayer.isInCheck) {
+                } else {
                     return checkIfPieceDefendsCheck(coordinates);
                 }
 //                showLegalMove(coordinates);
@@ -276,11 +302,16 @@ public class Moves{
         return true;
     }
 
+
     /**
-     * Helping function for checkIfMoveIsLegal() and checkForDiscoveryByAllyPiece()
-     * Checks if an ally Piece can discover its King (If the ally King is in check (checkForChecks()) when the Piece is removed -> it can be discovered)
-     * - if piece moves and opens the king to an attack -> illegal move
-     * - if calculateAttackingMoves after the turn contains the king coordinates -> illegal move
+     * Checks if after the move the chosen players king will be discovered
+     * - if after calculateAttackingMoves() the returned list contains the king coordinates then it's illegal move
+     *
+     * @param coordinates the coordinates where the selected piece will move to
+     * @param player      makes calculations for the given player
+     * @return true if king can be discovered
+     * @see #checkIfMoveIsIllegal(String) where this function is used
+     * @see #calculateAttackingMoves(Colour)
      */
     private boolean checkIfKingCanBeDiscovered(String coordinates, Player player) {
         Piece currentPiece = selectedPiece.copy();
@@ -308,11 +339,11 @@ public class Moves{
             chessPiecesMap.remove(currentPiece.getCoordinates());
             selectedPiece = tempPiece.copy();
 
-            if (enemyPieceTemp != null) { //Enemy piece has overlapping coordinates with ally piece (gets removed)
+            if (enemyPieceTemp != null) { //Enemy piece has overlapping coordinates with the ally piece (gets removed)
                 chessPiecesMap.put(enemyPieceTemp.getCoordinates(), enemyPieceTemp);
                 hasToBreak = true;
             }
-            return false; //(can't be discovered (is in check)) | return false -> continue for the whole diagonal!
+            return false; //can't be discovered (is in check) | return false - continue for the whole diagonal
         } else {
             chessPiecesMap.put(tempPiece.getCoordinates(), tempPiece); //selectedPiece
             chessPiecesMap.remove(currentPiece.getCoordinates());
@@ -325,19 +356,24 @@ public class Moves{
             if (nextTurnPlayer.isInCheck) {
                 legalMovesList.add(coordinates);
             }
-            return true; //(can protect! (is not in check))
+            return true; //can protect (is not in check)
         }
     }
 
 
     /**
-     * Helping function for checkIfMoveIsLegal()
+     * Checks if the selected piece defends check with its future move to the coordinates
+     *
+     * @param coordinates the coordinates of the future move of the selected piece
+     * @return false if current player has deflected check (because it is not illegal move)
+     * @see #selectedPiece
+     * @see #checkIfMoveIsIllegal(String)
      */
     private boolean checkIfPieceDefendsCheck(String coordinates) {
         if (!isCalculatingAttackingMoves && selectedPiece instanceof King) { //King logic...
             try {
                 if (chessPiecesMap.get(coordinates).getIsProtected()
-                        || (chessPiecesMap.get(coordinates).getColor().equals(selectedPiece.getColor()))) { //If the piece that the King tries to take are protected then the move is illegal
+                        || (chessPiecesMap.get(coordinates).getColor().equals(selectedPiece.getColor()))) { //If the piece that the King tries to take is protected then the move is illegal
                     hasToBreak = true;
                     return true;
                 } else if (!chessPiecesMap.get(coordinates).getIsProtected()) { //If the piece that attacks the King is not protected
@@ -384,8 +420,13 @@ public class Moves{
     }
 
     /**
-     * Helping function for checkIfPieceDefendsCheck() and checkIfCheckmate()
-     * Checks if a piece can protect the king / stop the check with its new coordinates
+     * Checks if the selected piece deflects check (if moving to the coordinates and blocks check)
+     *
+     * @param coordinates the coordinates of the future move of the selected piece
+     * @param player  makes calculations for the given player
+     * @return false if current player can deflect check (because it is not illegal move)
+     * @see #checkIfPieceDefendsCheck(String)
+     * @see #checkIfMoveIsIllegal(String)
      */
     private boolean checkIfPieceDeflectsCheck(String coordinates, Player player) {
         if (!isCalculatingAttackingMoves && attackingMovesList.contains(coordinates)
@@ -428,8 +469,8 @@ public class Moves{
                 chessPiecesMap.put(removedPiece.getCoordinates(), removedPiece);
             }
 
-            if (!chessPiecesMap.containsKey(coordinates)) { //If the coordinates are a Piece -> last calculation...
-                return true; //false //(adds the whole diagonal / line)
+            if (!chessPiecesMap.containsKey(coordinates)) { //If the coordinates are a Piece - last calculation...
+                return true; //false (adds the whole diagonal / line)
             }
         }
         hasToBreak = true;
@@ -438,6 +479,7 @@ public class Moves{
 
     /**
      * Shows the legal moves as green circles on the board
+     * @param coordinates legal coordinates of the selected piece
      */
     public void showLegalMove(String coordinates) {
         int coordinatesX = calculateX(coordinates.charAt(0));
@@ -457,8 +499,9 @@ public class Moves{
 
 
     /**
-     * Helping function for all pieces
-     * (StraightLinesMovesLocator, diagonalLinesMovesLocator, pawnMovesLocator, knightMovesLocator, kingMovesLocator | Queen -> uses rook and bishop moves)
+     * Shows the legal moves as green circles on the board
+     * @param coordinatesXCopy X legal coordinates of the selected piece
+     * @param coordinatesYCopy Y legal coordinates of the selected piece
      */
     private void showLegalMove(int coordinatesXCopy, int coordinatesYCopy) {
         String coordinates = getCoordinatesToString(coordinatesXCopy, coordinatesYCopy);

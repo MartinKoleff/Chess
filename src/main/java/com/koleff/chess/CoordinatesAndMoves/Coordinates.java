@@ -4,11 +4,14 @@ import com.koleff.chess.Board.Board;
 import javafx.scene.input.MouseEvent;
 
 import static com.koleff.chess.Board.ChessBoardController.CELL_WIDTH;
-import static com.koleff.chess.Board.ChessBoardController.board;
 
-public class Coordinates{
+public class Coordinates {
+
     /**
-     * Helping functions for locatePiece()
+     * Turns mouse click coordinates into X chess board coordinates
+     *
+     * @param mouseEvent the coordinates of the mouse click
+     * @return X coordinates as char
      */
     public static char calculateX(MouseEvent mouseEvent) {
         double coordinatesX = mouseEvent.getX();
@@ -17,16 +20,16 @@ public class Coordinates{
     }
 
     /**
-     * Re-using the calculateX() function
-     * Turning number coordinates into char coordinates
+     * Turning X number coordinates into char coordinates
      *
-     * @param coordinatesX
+     * @param coordinatesX X coordinates as number
+     * @return X coordinates as char
      */
     public static char calculateX(double coordinatesX) {
         double coordinates;
 
         //If called with Mouse Event
-        if (coordinatesX > 8) { //coordinatesX / 100 >= 1
+        if (coordinatesX > 8) {
             coordinates = coordinatesX;
         } else {
             coordinates = (coordinatesX) * 100;
@@ -51,7 +54,6 @@ public class Coordinates{
             return 'h';
         } else {
             try {
-                System.out.println(coordinates);
                 throw new Exception("Error on the board. You have selected square out of bounds. Try again.");
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -63,10 +65,12 @@ public class Coordinates{
     }
 
     /**
-     * Char coordinates of x to int coordinates
+     * Turning char coordinates into int coordinates
+     *
+     * @param coordinatesX coordinates as char
      */
-    public static int calculateX(char x) {
-        switch (x) {
+    public static int calculateX(char coordinatesX) {
+        switch (coordinatesX) {
             case 'a':
                 return 1;
             case 'b':
@@ -84,12 +88,22 @@ public class Coordinates{
             case 'h':
                 return 8;
             default:
-                return 0;
+                try {
+                    throw new Exception("Invalid coordinates. Try again.");
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
+                } finally {
+                    return 0;
+                }
         }
     }
 
     /**
-     * Helping functions for locatePiece()
+     * Turns mouse click coordinates into y chess board coordinates
+     *
+     * @param mouseEvent the coordinates of the mouse click
+     * @return Y chess board coordinates
      */
     public static int calculateY(MouseEvent mouseEvent) {
         int coordinates = (int) mouseEvent.getY();
@@ -126,7 +140,9 @@ public class Coordinates{
     }
 
     /**
-     * Gets the coordinates to String
+     * Combines X and Y coordinates
+     *
+     * @return String chess board coordinates
      */
     public static String getCoordinatesToString(char coordinatesX, int coordinatesY) {
         String coordinates = coordinatesX + Integer.toString(coordinatesY);
@@ -143,7 +159,11 @@ public class Coordinates{
     }
 
     /**
-     * Checks if the coordinates are valid
+     * Validates coordinates
+     *
+     * @param coordinatesX X coordinates as number
+     * @param coordinatesY Y coordinates as number
+     * @return if coordinates between 1 and 8
      */
     private static boolean coordinatesAreValid(int coordinatesX, int coordinatesY) {
         if (coordinatesX >= 1 && coordinatesX <= 8 && coordinatesY >= 1 && coordinatesY <= 8) {

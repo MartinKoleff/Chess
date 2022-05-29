@@ -20,6 +20,8 @@ public class Evaluate {
 
     /**
      * Sums the points of each player's color
+     * @param color makes calculations for the player color given
+     * @return points
      */
     public int calculatePoints(Colour color) {
         List<Piece> playerPieces = moves.getChessPiecesMap().values().stream()
@@ -60,5 +62,4 @@ public class Evaluate {
 
         //Write a code where a line is filled based on the ratio between white and black points...
     }
-
 }

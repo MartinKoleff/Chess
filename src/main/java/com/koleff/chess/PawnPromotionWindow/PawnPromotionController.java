@@ -30,11 +30,22 @@ public class PawnPromotionController implements Initializable {
     @FXML
     private ImageView imageViewKnight;
 
+    /**
+     * Sets some fields
+     *
+     * @param coordinates the future coordinates
+     * @param pawn        the pawn that is promoting
+     */
     public static void setPiece(String coordinates, Pawn pawn) {
         pawn.setCoordinates(coordinates);
         oldPawn = new Pawn(pawn);
     }
 
+    /**
+     * Sets the stage, so it can be closed from the Controller in the future
+     *
+     * @param pawnPromotionStage the stage of the promotion window
+     */
     public static void setStage(Stage pawnPromotionStage) {
         PawnPromotionController.pawnPromotionStage = pawnPromotionStage;
     }
@@ -45,7 +56,6 @@ public class PawnPromotionController implements Initializable {
             promotedPawn = new Queen(oldPawn);
             board.addToBoard(promotedPawn.getCoordinates(), promotedPawn);
 
-//             countDownLatch.countDown();
             pawnPromotionStage.close();
         });
         imageViewRook.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -83,25 +93,3 @@ public class PawnPromotionController implements Initializable {
         }
     }
 }
-// @FXML
-//    public void selectQueen(MouseEvent e){
-//
-//    }
-//
-//    @FXML
-//    public void selectRook(){
-//
-//    }
-//
-//    @FXML
-//    public void selectBishop(){
-//
-//    }
-//
-//    @FXML
-//    public void selectKnight(){
-//
-//    }
-//public PawnPromotionController(Stage pawnPromotionStage) { //fucks the fxml...
-//    this.pawnPromotionStage = pawnPromotionStage;
-//}

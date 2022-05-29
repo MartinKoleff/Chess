@@ -7,17 +7,7 @@ import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 
 public class Knight extends Piece {
     /**
-     * Fields
-     */
-
-    /**
      * Constructors
-     */
-
-    /**
-     * @param coordinatesX
-     * @param coordinatesY
-     * @param pieceColor
      */
     public Knight(char coordinatesX, int coordinatesY, Colour pieceColor) {
         super(coordinatesX, coordinatesY, pieceColor);

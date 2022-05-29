@@ -16,9 +16,6 @@ public class CalculatingAttackingMovesRunnable extends Moves implements Runnable
         this.piece = piece;
     }
 
-    /**
-     * Functions
-     */
     public synchronized void requestStop() {
         this.stopRequest = true;
     }

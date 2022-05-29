@@ -7,17 +7,7 @@ import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 
 public class Rook extends Piece {
     /**
-     * Fields
-     */
-
-    /**
      * Constructors
-     */
-
-    /**
-     * @param coordinatesX
-     * @param coordinatesY
-     * @param pieceColor
      */
     public Rook(char coordinatesX, int coordinatesY, Colour pieceColor) {
         super(coordinatesX, coordinatesY, pieceColor);

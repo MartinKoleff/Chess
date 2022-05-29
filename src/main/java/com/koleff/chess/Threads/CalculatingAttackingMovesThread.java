@@ -7,13 +7,10 @@ public class CalculatingAttackingMovesThread extends Thread{
     private CalculatingAttackingMovesRunnable runnable;
     private boolean stopRequest;
 
-
     public CalculatingAttackingMovesThread(CalculatingAttackingMovesRunnable runnable){
         this.runnable = runnable;
     }
-    /**
-     * Functions
-     */
+
     public synchronized void requestStop(){
         this.stopRequest = true;
     }

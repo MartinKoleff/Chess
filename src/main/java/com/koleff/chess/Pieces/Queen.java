@@ -3,17 +3,7 @@ package com.koleff.chess.Pieces;
 
 public class Queen extends Piece{
     /**
-     * Fields
-     */
-
-    /**
      * Constructors
-     */
-
-    /**
-     * @param coordinatesX
-     * @param coordinatesY
-     * @param pieceColor
      */
     public Queen(char coordinatesX, int coordinatesY, Colour pieceColor) {
         super(coordinatesX, coordinatesY, pieceColor);

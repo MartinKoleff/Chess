@@ -10,12 +10,6 @@ public class Bishop extends Piece {
     /**
      * Constructors
      */
-
-    /**
-     * @param coordinatesX
-     * @param coordinatesY
-     * @param pieceColor
-     */
     public Bishop(char coordinatesX, int coordinatesY, Colour pieceColor) {
         super(coordinatesX, coordinatesY, pieceColor);
         hasMoved = false;

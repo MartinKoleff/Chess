@@ -8,6 +8,8 @@ public abstract class Piece {
     protected int coordinatesY; //1-8
     protected Colour pieceColor;
     protected boolean isProtected = false; //if true -> can't be taken by the enemy king
+
+    //Encapsulate... (to protected)
     public boolean hasMoved = false;
 
     /**
@@ -26,7 +28,6 @@ public abstract class Piece {
 
 
     public Piece(Piece piece) {
-//        super(piece.coordinatesX, piece.coordinatesY, piece.pieceColor);
         this.coordinatesX = piece.coordinatesX;
         this.coordinatesY = piece.coordinatesY;
         this.pieceColor = piece.pieceColor;
@@ -36,7 +37,6 @@ public abstract class Piece {
 
     public abstract Piece copy();
     public abstract void move();
-
 
     /**
      * Getters & Setters
@@ -62,8 +62,9 @@ public abstract class Piece {
         this.coordinatesY = Integer.parseInt(String.valueOf(coordinates.charAt(1)));
     }
 
+
     /**
-     * When needed to set coordinates for gridPane (each cell)
+     * Transforms char X coordinates to number value
      */
     public int getCoordinatesXInt() {
         switch (getCoordinatesXChar()) {

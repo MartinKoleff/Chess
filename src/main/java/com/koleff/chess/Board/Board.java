@@ -1,32 +1,36 @@
 package com.koleff.chess.Board;
 
 import com.koleff.chess.CoordinatesAndMoves.Coordinates;
-import javafx.geometry.Insets;
+import com.koleff.chess.Pieces.*;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
-import com.koleff.chess.Pieces.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 
-import java.util.Calendar;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Board extends ChessBoardController {
-
+    /**
+     * Fields
+     */
     private static GridPane gridPane;
 
+    /**
+     * Constructor
+     * @param gridPane - used for painting the board
+     */
     public Board(GridPane gridPane) {
         this.gridPane = gridPane;
 
         paintBoard();
     }
 
+    /**
+     * Getters
+     */
     public static GridPane getGridPane() {
         return gridPane;
     }
@@ -34,7 +38,6 @@ public class Board extends ChessBoardController {
     /**
      * Arrange the board in the starting position
      */
-    @SuppressWarnings("unchecked")
     public void arrangeBoard() {
         //White Pieces
         addToBoard("a8", new Rook('a', 8, Colour.WHITE));
@@ -463,9 +466,9 @@ public class Board extends ChessBoardController {
 
     }
 
-
     /**
      * Adds the pieces in the Map
+     * @param coordinates - the coordinates of the piece
      */
     public void addToBoard(String coordinates, Piece piece) {
         moves.getChessPiecesMap().put(coordinates, piece);
@@ -477,7 +480,6 @@ public class Board extends ChessBoardController {
         }
         showPieceToBoard(piece);
     }
-
 
     /**
      * Shows the pieces in the GUI
@@ -556,7 +558,6 @@ public class Board extends ChessBoardController {
             } else {
                 lastSquareWasWhite = true;
             }
-
             for (int i = 0; i < gridPane.getColumnCount(); i++) {
                 pane = new Pane();
                 pane.setPrefWidth(100);
@@ -572,8 +573,8 @@ public class Board extends ChessBoardController {
 
                 coordinatesSquare = Coordinates.calculateX(i + 1) + "" + (8 - j);
                 coordinatesLabel = new Label(coordinatesSquare);
-
                 coordinatesLabel.setId("coordinates_label");
+
                 pane.getChildren().add(coordinatesLabel);
                 gridPane.add(pane, i, j);
             }
@@ -583,7 +584,6 @@ public class Board extends ChessBoardController {
 
     /**
      * Arrange the board based on the pieces in the Map
-     * (arrangeBoardByMap)
      */
     public void updateBoard() {
         paintBoard();

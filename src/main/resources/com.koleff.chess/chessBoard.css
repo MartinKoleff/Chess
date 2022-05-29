@@ -12,12 +12,3 @@
 .Label{
     -fx-text-fill: Red;
 }
-/*.StackPane{*/
-/*    -fx-padding: 5 5 5 5;*/
-/*}*/
-/*.grid{*/
-/*    -fx-background-color: red;*/
-/*}*/
-
-/*-fx-background-color: black;  !*works for nodes (pane)*!*/
-/*-fx-fill: Black;*/         /*works for rectangle*/

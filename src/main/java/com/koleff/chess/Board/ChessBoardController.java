@@ -47,11 +47,7 @@ public class ChessBoardController implements Initializable {
     public static Moves moves;
 
     /**
-     * Functions
-     */
-
-    /**
-     * This method is called upon fxml load (before the program loads)
+     * This method is called upon fxml load (before the program starts)
      */
     public void initialize(URL location, ResourceBundle resources) {
         gridPane.setAlignment(Pos.CENTER_LEFT);
@@ -66,12 +62,13 @@ public class ChessBoardController implements Initializable {
     }
 
     /**
-     * Select logic (Triggered on every mouse press)
+     * Determines which piece was selected by the user
+     * @param mouseEvent the coordinates of the mouse click
      */
     public void selectPiece(MouseEvent mouseEvent) {
         String coordinates = locatePiece(mouseEvent);
 
-        //If piece is already selected -> move
+        //If piece is already selected - move
         if (moves.getSelectedPiece() != null) {
             movePieceByClicking(mouseEvent, moves.getSelectedPiece());
             return;
@@ -85,8 +82,8 @@ public class ChessBoardController implements Initializable {
             board.updateBoard();
             System.out.printf("No piece on square %s! Try again.\n", coordinates);
         } else {
-            if (!moves.getChessPiecesMap().get(coordinates).getColor().equals(currentPlayer.getPlayerPiecesColor())) { //If piece is the color of the player continue. Otherwise, try again
-                System.out.println("You have selected pieces from wrong color! Please try to select piece from your color!\n");
+            if (!moves.getChessPiecesMap().get(coordinates).getColor().equals(currentPlayer.getPlayerPiecesColor())) {
+                System.out.println("You have selected pieces from wrong color! Please try to select piece from your color!");
                 return;
             }
 
@@ -95,12 +92,12 @@ public class ChessBoardController implements Initializable {
             moves.setSelectedPiece(piece);
 
             //Protection of enemy pieces
-            moves.calculateProtection(nextTurnPlayer.getPlayerPiecesColor());
+            moves.calculateProtection(nextTurnPlayer.getPlayerPiecesColor()); //CHECK IF NEEDED...
 
-            moves.calculateAttackingMoves(nextTurnPlayer.getPlayerPiecesColor());
+            moves.calculateAttackingMoves(nextTurnPlayer.getPlayerPiecesColor()); //CHECK IF NEEDED...
             moves.getSelectedPiece().move();
 
-            //If piece doesn't have moves -> don't have to double-click / wait for clicking again
+            //If piece doesn't have moves - don't have to double-click / wait for clicking again
             if (moves.getLegalMovesList().isEmpty()) {
                 moves.setSelectedPiece(null);
             }
@@ -108,7 +105,9 @@ public class ChessBoardController implements Initializable {
     }
 
     /**
-     * Move the pieces by clicking on the legal moves.
+     * Move the pieces by clicking on legal square.
+     * @param mouseEvent the coordinates of the mouse click
+     * @param piece the selected piece
      */
     public void movePieceByClicking(MouseEvent mouseEvent, Piece piece) {
         String newCoordinates = locatePiece(mouseEvent);
@@ -205,7 +204,7 @@ public class ChessBoardController implements Initializable {
         }
 
         //Resetting variables
-        resetEnPassantAfterTurn(currentPlayer.getPlayerPiecesColor());
+        resetEnPassant(currentPlayer.getPlayerPiecesColor());
         moves.setSelectedPiece(null);
         moves.getAttackingMovesList().clear();
         moves.getLegalMovesList().clear();
@@ -214,14 +213,11 @@ public class ChessBoardController implements Initializable {
 
     /**
      * Checks if game has ended in a draw (Stalemate)
+     * - No moves for the enemy king
+     * - The enemy King is NOT in check
+     * - All the enemy pieces don't have legal moves or can't move
      */
-    //3 WAY REPETITION
-    //50 TURN RULE
     private void checkForStalemate() {
-        /** NO MOVES OF ANY PIECE (STALEMATE)
-         * - no moves for the enemy king
-         * - enemy King is not in check
-         * - all of enemy pieces can't move*/
         isCalculatingStalemate = true;
         moves.getLegalMovesList().clear();
 
@@ -246,6 +242,9 @@ public class ChessBoardController implements Initializable {
 
     /**
      * Checks if game has ended in a win for the current player (Checkmate)
+     * - The enemy king is in check
+     * - The enemy king has no legal moves
+     * - No enemy piece can protect or deflect the check
      */
     private void checkForCheckmate() {
         isCalculatingCheckmate = true;
@@ -269,19 +268,20 @@ public class ChessBoardController implements Initializable {
 
     /**
      * Castling
-     * - Only replaces the rook (the King moves to its correct place in movePiece())
+     * - Only replaces the rook (the King moves to its correct place in movePieceByClicking())
+     * @param castlingCoordinates coordinates of where the ally King goes
      */
     private void castle(String castlingCoordinates) {
         Rook rook;
 
         switch (moves.getSelectedPiece().getColor()) {
             case BLACK -> {
-                if (castlingCoordinates.toCharArray()[0] == 'b') { //Short castle
+                if (castlingCoordinates.charAt(0) == 'b') { //Short castle
                     rook = (Rook) moves.getChessPiecesMap().get("a1");
                     rook.setCoordinates("c1");
                     moves.getChessPiecesMap().remove("a1");
                     moves.getChessPiecesMap().put("c1", rook);
-                } else if (castlingCoordinates.toCharArray()[0] == 'f') { //Long castle
+                } else if (castlingCoordinates.charAt(0) == 'f') { //Long castle
                     rook = (Rook) moves.getChessPiecesMap().get("h1");
                     rook.setCoordinates("e1");
                     moves.getChessPiecesMap().remove("h1");
@@ -292,12 +292,12 @@ public class ChessBoardController implements Initializable {
                 break;
             }
             case WHITE -> {
-                if (castlingCoordinates.toCharArray()[0] == 'b') { //Short castle
+                if (castlingCoordinates.charAt(0) == 'b') { //Short castle
                     rook = (Rook) moves.getChessPiecesMap().get("a8");
                     rook.setCoordinates("c8");
                     moves.getChessPiecesMap().remove("a8");
                     moves.getChessPiecesMap().put("c8", rook);
-                } else if (castlingCoordinates.toCharArray()[0] == 'f') { //Long castle
+                } else if (castlingCoordinates.charAt(0) == 'f') { //Long castle
                     rook = (Rook) moves.getChessPiecesMap().get("h8");
                     rook.setCoordinates("e8");
                     moves.getChessPiecesMap().remove("h8");
@@ -312,9 +312,10 @@ public class ChessBoardController implements Initializable {
 
 
     /**
-     * Resets En Passant every turn
+     * Resets En Passant
+     * @param colour the player pieces color
      */
-    public void resetEnPassantAfterTurn(Colour colour) {
+    public void resetEnPassant(Colour colour) {
         for (Piece piece : moves.getChessPiecesMap().values()) {
             if (piece instanceof Pawn && piece.getColor().equals(colour)) {
                 ((Pawn) piece).hasDoubleMoved = false;
@@ -325,6 +326,9 @@ public class ChessBoardController implements Initializable {
 
     /**
      * Gets the square of the mouse press
+     * @param mouseEvent the coordinates of the mouse click
+     * @return chess board coordinates of the mouse click
+     * @see com.koleff.chess.CoordinatesAndMoves.Coordinates for coordinates calculation
      */
     public String locatePiece(MouseEvent mouseEvent) {
         char coordinatesX = calculateX(mouseEvent);
