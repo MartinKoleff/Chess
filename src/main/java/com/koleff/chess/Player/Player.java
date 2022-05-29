@@ -22,10 +22,13 @@ public class Player {
 
     //Encapsulate...
     public boolean canCastle = false;
-    public boolean canCastleQueenSide = false;
-    public boolean canCastleKingSide = false;
-
     public boolean hasCastled = false;
+
+    //Used in FENEditor
+    public boolean hasCastlingRights = true;
+    public boolean canCastleQueenSide = true;
+    public boolean canCastleKingSide = true;
+
     public boolean isCheckmated = false;
     public boolean isStalemated = false;
     public boolean isInCheck = false;
@@ -249,5 +252,34 @@ public class Player {
                 return;
             }
         }
+    }
+
+    /**
+     * Used for FEN notation
+     * - if rook has not been moved
+     * - if king has not been moved
+     */
+    public void checkForCastlingRights() { //TEST...
+        this.hasCastlingRights = this.getPieces().stream()
+                .filter(e -> e instanceof Rook)
+                .filter(e -> !e.hasMoved)
+                .count() > 0
+                && !this.getPlayerKing().hasMoved;
+
+        this.canCastleQueenSide = !this.getPieces().stream()
+                .filter(e -> e instanceof Rook)
+                .filter(e -> !e.hasMoved)
+                .filter(e -> e.getCoordinatesXChar() == 'a')
+                .findFirst()
+                .get()
+                .hasMoved;
+
+        this.canCastleKingSide = !this.getPieces().stream()
+                .filter(e -> e instanceof Rook)
+                .filter(e -> !e.hasMoved)
+                .filter(e -> e.getCoordinatesXChar() == 'h')
+                .findFirst()
+                .get()
+                .hasMoved;
     }
 }

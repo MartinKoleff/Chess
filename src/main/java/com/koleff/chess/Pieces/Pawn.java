@@ -22,7 +22,11 @@ public class Pawn extends Piece {
      */
     public boolean hasDoubleMoved = false;
     public boolean hasPromoted = false;
+
+//    private String enPassantSquare; //the square behind the pawn (where the enemy pawn will go after en passant)
+
     private static Stage pawnPromotionStage;
+
     /**
      * Constructors
      */
@@ -191,7 +195,7 @@ public class Pawn extends Piece {
         }
         hasToBreak = false;
 
-        /**En Passant */
+        //En Passant
         if (!isCalculatingAttackingMoves && !isCalculatingProtection) {
             checkForEnPassant(coordinatesEnPassantLeftSquare, coordinatesY);
             checkForEnPassant(coordinatesEnPassantRightSquare, coordinatesY);
@@ -200,8 +204,9 @@ public class Pawn extends Piece {
     }
 
     /**
-     * Helping function for pawnMovesLocator()
-     * Checks for En Passant on the left
+     * Checks for En Passant
+     * @param coordinates
+     * @param coordinatesY Y coordinates of the current players pawn
      */
     public void checkForEnPassant(String coordinates, int coordinatesY) {
         try {

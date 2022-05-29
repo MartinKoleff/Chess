@@ -121,8 +121,8 @@ public class ChessBoardController implements Initializable {
         if (moves.getLegalMovesList().contains(newCoordinates)) {
 
             //Castle
-            if (moves.getSelectedPiece() instanceof King && !currentPlayer.hasCastled && currentPlayer.canCastle && moves.castlingMovesList.contains(newCoordinates)
-                    && !moves.getSelectedPiece().hasMoved) {
+            if (moves.getSelectedPiece() instanceof King && !currentPlayer.hasCastled && currentPlayer.canCastle
+                    && moves.castlingMovesList.contains(newCoordinates) && !moves.getSelectedPiece().hasMoved) {
                 castle(newCoordinates);
             }
             piece.hasMoved = true;
@@ -207,6 +207,8 @@ public class ChessBoardController implements Initializable {
         }
 
         //Saves last turn with FEN notation into .txt file
+        whitePlayer.checkForCastlingRights();
+        blackPlayer.checkForCastlingRights();
         fenEditor.transformBoardToFEN();
 
         //Resetting variables
@@ -287,13 +289,11 @@ public class ChessBoardController implements Initializable {
                     rook.setCoordinates("c1");
                     moves.getChessPiecesMap().remove("a1");
                     moves.getChessPiecesMap().put("c1", rook);
-                    blackPlayer.canCastleKingSide = false;
                 } else if (castlingCoordinates.charAt(0) == 'f') { //Long castle
                     rook = (Rook) moves.getChessPiecesMap().get("h1");
                     rook.setCoordinates("e1");
                     moves.getChessPiecesMap().remove("h1");
                     moves.getChessPiecesMap().put("e1", rook);
-                    blackPlayer.canCastleQueenSide = false;
                 }
                 blackPlayer.hasCastled = true;
                 blackPlayer.canCastle = false;
@@ -305,13 +305,11 @@ public class ChessBoardController implements Initializable {
                     rook.setCoordinates("c8");
                     moves.getChessPiecesMap().remove("a8");
                     moves.getChessPiecesMap().put("c8", rook);
-                    whitePlayer.canCastleKingSide = false;
                 } else if (castlingCoordinates.charAt(0) == 'f') { //Long castle
                     rook = (Rook) moves.getChessPiecesMap().get("h8");
                     rook.setCoordinates("e8");
                     moves.getChessPiecesMap().remove("h8");
                     moves.getChessPiecesMap().put("e8", rook);
-                    whitePlayer.canCastleQueenSide = false;
                 }
                 whitePlayer.hasCastled = true;
                 whitePlayer.canCastle = false;
