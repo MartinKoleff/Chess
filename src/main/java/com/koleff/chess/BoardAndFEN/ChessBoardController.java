@@ -1,4 +1,4 @@
-package com.koleff.chess.Board;
+package com.koleff.chess.BoardAndFEN;
 
 import com.koleff.chess.Threads.PawnPromotionRunnable;
 import com.koleff.chess.Threads.PawnPromotionThread;
@@ -45,6 +45,7 @@ public class ChessBoardController implements Initializable {
 
     public static Board board;
     public static Moves moves;
+    public FENEditor fenEditor;
 
     /**
      * This method is called upon fxml load (before the program starts)
@@ -54,9 +55,11 @@ public class ChessBoardController implements Initializable {
 
         board = new Board(gridPane);
         moves = new Moves();
+        fenEditor = new FENEditor();
 
 //        board.arrangeTestingBoard(); //Used for testing...
         board.arrangeBoard();
+        fenEditor.transformBoardToFEN();
 
         System.out.println(currentPlayer.getPlayerPiecesColor() + "'s Player Turn.");
     }
@@ -203,6 +206,9 @@ public class ChessBoardController implements Initializable {
             System.out.println("The move you are trying to make is illegal!");
         }
 
+        //Saves last turn with FEN notation into .txt file
+        fenEditor.transformBoardToFEN();
+
         //Resetting variables
         resetEnPassant(currentPlayer.getPlayerPiecesColor());
         moves.setSelectedPiece(null);
@@ -281,11 +287,13 @@ public class ChessBoardController implements Initializable {
                     rook.setCoordinates("c1");
                     moves.getChessPiecesMap().remove("a1");
                     moves.getChessPiecesMap().put("c1", rook);
+                    blackPlayer.canCastleKingSide = false;
                 } else if (castlingCoordinates.charAt(0) == 'f') { //Long castle
                     rook = (Rook) moves.getChessPiecesMap().get("h1");
                     rook.setCoordinates("e1");
                     moves.getChessPiecesMap().remove("h1");
                     moves.getChessPiecesMap().put("e1", rook);
+                    blackPlayer.canCastleQueenSide = false;
                 }
                 blackPlayer.hasCastled = true;
                 blackPlayer.canCastle = false;
@@ -297,11 +305,13 @@ public class ChessBoardController implements Initializable {
                     rook.setCoordinates("c8");
                     moves.getChessPiecesMap().remove("a8");
                     moves.getChessPiecesMap().put("c8", rook);
+                    whitePlayer.canCastleKingSide = false;
                 } else if (castlingCoordinates.charAt(0) == 'f') { //Long castle
                     rook = (Rook) moves.getChessPiecesMap().get("h8");
                     rook.setCoordinates("e8");
                     moves.getChessPiecesMap().remove("h8");
                     moves.getChessPiecesMap().put("e8", rook);
+                    whitePlayer.canCastleQueenSide = false;
                 }
                 whitePlayer.hasCastled = true;
                 whitePlayer.canCastle = false;

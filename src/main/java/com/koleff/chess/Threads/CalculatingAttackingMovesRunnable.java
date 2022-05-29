@@ -3,7 +3,7 @@ package com.koleff.chess.Threads;
 import com.koleff.chess.CoordinatesAndMoves.Moves;
 import com.koleff.chess.Pieces.Piece;
 
-import static com.koleff.chess.Board.ChessBoardController.board;
+import static com.koleff.chess.BoardAndFEN.ChessBoardController.board;
 
 public class CalculatingAttackingMovesRunnable extends Moves implements Runnable {
     /**

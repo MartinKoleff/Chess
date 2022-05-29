@@ -1,4 +1,4 @@
-package com.koleff.chess.Board;
+package com.koleff.chess.BoardAndFEN;
 
 import com.koleff.chess.CoordinatesAndMoves.Coordinates;
 import com.koleff.chess.Pieces.*;

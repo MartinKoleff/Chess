@@ -8,7 +8,7 @@ module com.koleff.chess {
     opens com.koleff.chess.MainMenu to javafx.fxml;
 //    exports com.koleff.chess.MainMenu;
 
-    opens com.koleff.chess.Board to javafx.fxml, com.google.common;
+    opens com.koleff.chess.BoardAndFEN to javafx.fxml, com.google.common;
 //    exports com.koleff.chess.Board;
 
     opens com.koleff.chess.Timer to com.google.common;

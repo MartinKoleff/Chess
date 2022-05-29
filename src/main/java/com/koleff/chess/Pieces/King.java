@@ -1,6 +1,6 @@
 package com.koleff.chess.Pieces;
 
-import static com.koleff.chess.Board.ChessBoardController.*;
+import static com.koleff.chess.BoardAndFEN.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 

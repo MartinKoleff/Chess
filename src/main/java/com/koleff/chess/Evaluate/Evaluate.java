@@ -5,7 +5,7 @@ import com.koleff.chess.Pieces.Piece;
 
 import java.util.List;
 
-import static com.koleff.chess.Board.ChessBoardController.moves;
+import static com.koleff.chess.BoardAndFEN.ChessBoardController.moves;
 
 /**
  * Still not implemented! (Coming soon...)

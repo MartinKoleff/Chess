@@ -1,6 +1,6 @@
 package com.koleff.chess.CoordinatesAndMoves;
 
-import com.koleff.chess.Board.Board;
+import com.koleff.chess.BoardAndFEN.Board;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.paint.Color;
@@ -13,7 +13,7 @@ import com.koleff.chess.Threads.CalculatingAttackingMovesThread;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.koleff.chess.Board.ChessBoardController.*;
+import static com.koleff.chess.BoardAndFEN.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.calculateX;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 

@@ -1,9 +1,9 @@
 package com.koleff.chess.CoordinatesAndMoves;
 
-import com.koleff.chess.Board.Board;
+import com.koleff.chess.BoardAndFEN.Board;
 import javafx.scene.input.MouseEvent;
 
-import static com.koleff.chess.Board.ChessBoardController.CELL_WIDTH;
+import static com.koleff.chess.BoardAndFEN.ChessBoardController.CELL_WIDTH;
 
 public class Coordinates {
 

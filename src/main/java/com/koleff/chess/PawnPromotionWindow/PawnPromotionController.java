@@ -11,8 +11,8 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static com.koleff.chess.Board.ChessBoardController.board;
-import static com.koleff.chess.Board.ChessBoardController.currentPlayer;
+import static com.koleff.chess.BoardAndFEN.ChessBoardController.board;
+import static com.koleff.chess.BoardAndFEN.ChessBoardController.currentPlayer;
 
 public class PawnPromotionController implements Initializable {
     /**

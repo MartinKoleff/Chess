@@ -11,7 +11,7 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
-import static com.koleff.chess.Board.ChessBoardController.*;
+import static com.koleff.chess.BoardAndFEN.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 import static com.koleff.chess.MainMenu.Controller.chessBoardStage;

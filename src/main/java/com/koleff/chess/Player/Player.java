@@ -6,7 +6,7 @@ import com.koleff.chess.Timer.Clock;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.koleff.chess.Board.ChessBoardController.*;
+import static com.koleff.chess.BoardAndFEN.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 
 
@@ -22,6 +22,9 @@ public class Player {
 
     //Encapsulate...
     public boolean canCastle = false;
+    public boolean canCastleQueenSide = false;
+    public boolean canCastleKingSide = false;
+
     public boolean hasCastled = false;
     public boolean isCheckmated = false;
     public boolean isStalemated = false;
@@ -104,7 +107,6 @@ public class Player {
         return kingCoordinates;
     }
 
-
     /**
      * Get the players king
      *
@@ -148,8 +150,6 @@ public class Player {
         return whitePlayer;
     }
 
-
-
     /**
      * Checks if the players king is eligible to castle
      * Requirements to castle:
@@ -187,6 +187,7 @@ public class Player {
                         System.out.println("Short Castle -> b8");
                         moves.showLegalMove("b8");
                         this.canCastle = true;
+                        this.canCastleKingSide = true;
                     }
                     //Long castle (queen side)
                     if (!this.isInCheck && moves.getSelectedPiece() instanceof King
@@ -203,6 +204,7 @@ public class Player {
                         System.out.println("Long Castle -> f8");
                         moves.showLegalMove("f8");
                         this.canCastle = true;
+                        this.canCastleQueenSide = true;
                     }
                     break;
                 }
@@ -220,6 +222,7 @@ public class Player {
                         System.out.println("Short Castle -> b1");
                         moves.showLegalMove("b1");
                         this.canCastle = true;
+                        this.canCastleKingSide = true;
                     }
                     //Long castle (queen side)
                     if (!this.isInCheck && moves.getSelectedPiece() instanceof King
@@ -236,6 +239,7 @@ public class Player {
                         System.out.println("Long Castle -> f1");
                         moves.showLegalMove("f1");
                         this.canCastle = true;
+                        this.canCastleQueenSide = true;
                     }
                     break;
                 }

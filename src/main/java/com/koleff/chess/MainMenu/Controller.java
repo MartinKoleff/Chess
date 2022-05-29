@@ -1,6 +1,6 @@
 package com.koleff.chess.MainMenu;
 
-import com.koleff.chess.Board.ChessBoardController;
+import com.koleff.chess.BoardAndFEN.ChessBoardController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
