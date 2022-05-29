@@ -26,9 +26,6 @@ public class Moves {
     private List<String> attackingMovesList = new ArrayList<>(); //String - coordinates
     private Piece selectedPiece = null;
 
-    public static String enPassantSquare = null; //The square where the pawn will go after capture
-    public static String enPassantEnemyPawnSquare = null; //The square of the enemy pawn
-
     //Make non-static...
     public static boolean calculatingIfPieceProtectsKing = false;
     public static boolean isCalculatingKingDiscoveryFromAllyPiece = false;

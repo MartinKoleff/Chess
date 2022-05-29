@@ -34,6 +34,7 @@ public class Player {
     public boolean isInCheck = false;
 
     private Clock clock;
+    private Pawn enPassantPawn;
 
     /**
      * Constructor
@@ -281,5 +282,45 @@ public class Player {
                 .findFirst()
                 .get()
                 .hasMoved;
+    }
+
+    /**
+     * Used to set the en passant pawn
+     * @param enPassantPawn pawn that has double moved
+     * */
+    public void setEnPassantPawn(Pawn enPassantPawn) {
+        this.enPassantPawn = enPassantPawn;
+    }
+
+    /**
+     * Check if the player contains pawn that has double moved
+     * @return true if enPassantPawn contains value
+     *
+     */
+    public boolean containsEnPassantPawn() {
+        return  enPassantPawn != null;
+    }
+
+    /**
+     * Get the players last pawn that has double moved
+     * @return the last pawn that has double moved
+     *
+     */
+    public Pawn getEnPassantPawn(){
+        return enPassantPawn;
+    }
+
+
+    /**
+     * Resets En Passant
+     */
+    public void resetEnPassant() {
+        for (Piece piece : moves.getChessPiecesMap().values()) {
+            if (piece instanceof Pawn && piece.getColor().equals(this.getPlayerPiecesColor())) {
+                ((Pawn) piece).hasDoubleMoved = false;
+                ((Pawn) piece).setEnPassantSquare(null);
+            }
+        }
+        this.setEnPassantPawn(null);
     }
 }

@@ -84,11 +84,13 @@ public class FENEditor {
         }
 
         //Adds to the FEN  En Passant (enemy pawn square)
-        if (moves.getSelectedPiece() instanceof Pawn && moves.enPassantSquare != null) {
-            boardToFEN.append(moves.enPassantEnemyPawnSquare);
+        if (moves.getSelectedPiece() instanceof Pawn
+                && ((Pawn) moves.getSelectedPiece()).getEnPassantSquare() != null) {
+            boardToFEN.append(" " + ((Pawn)moves.getSelectedPiece()).getEnPassantSquare());
         } else {
             boardToFEN.append(" -");
         }
+
         //Halfmove clock (50 move rule)
 
         //Fullmove number (the number of turns - starts from 1 and increments after the black players turn)

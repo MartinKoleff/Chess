@@ -66,6 +66,7 @@ public class ChessBoardController implements Initializable {
 
     /**
      * Determines which piece was selected by the user
+     *
      * @param mouseEvent the coordinates of the mouse click
      */
     public void selectPiece(MouseEvent mouseEvent) {
@@ -109,10 +110,11 @@ public class ChessBoardController implements Initializable {
 
     /**
      * Move the pieces by clicking on legal square.
-     * @param mouseEvent the coordinates of the mouse click
-     * @param piece the selected piece
+     *
+     * @param mouseEvent    the coordinates of the mouse click
+     * @param selectedPiece the selected piece
      */
-    public void movePieceByClicking(MouseEvent mouseEvent, Piece piece) {
+    public void movePieceByClicking(MouseEvent mouseEvent, Piece selectedPiece) {
         String newCoordinates = locatePiece(mouseEvent);
         char newCoordinatesX = newCoordinates.charAt(0);
         int newCoordinatesY = Integer.parseInt(String.valueOf(newCoordinates.charAt(1)));
@@ -125,41 +127,44 @@ public class ChessBoardController implements Initializable {
                     && moves.castlingMovesList.contains(newCoordinates) && !moves.getSelectedPiece().hasMoved) {
                 castle(newCoordinates);
             }
-            piece.hasMoved = true;
+            selectedPiece.hasMoved = true;
 
             //En Passant setter
-            if (piece instanceof Pawn) {
-                if (newCoordinatesY - 2 == piece.getCoordinatesY() || newCoordinatesY + 2 == piece.getCoordinatesY()) {
-                    ((Pawn) piece).hasDoubleMoved = true;
+            if (selectedPiece instanceof Pawn) {
+                if (newCoordinatesY - 2 == selectedPiece.getCoordinatesY()
+                        || newCoordinatesY + 2 == selectedPiece.getCoordinatesY()) {
+                    ((Pawn) selectedPiece).hasDoubleMoved = true;
+                    currentPlayer.setEnPassantPawn((Pawn) selectedPiece);
                 }
 
                 //Promotion
                 if (newCoordinatesY == 8 || newCoordinatesY == 1) {
-                    PawnPromotionRunnable pawnPromotionRunnable = new PawnPromotionRunnable((Pawn) piece, newCoordinates);
+                    PawnPromotionRunnable pawnPromotionRunnable = new PawnPromotionRunnable((Pawn) selectedPiece, newCoordinates);
                     PawnPromotionThread pawnPromotionThread = new PawnPromotionThread(pawnPromotionRunnable);
                     pawnPromotionThread.start();
                 }
 
                 //Has done En Passant
-                if (enPassantSquare != null && enPassantSquare.equals(newCoordinates)) {
-                    ((Pawn) piece).hasDoubleMoved = false;
-                    moves.getChessPiecesMap().remove(enPassantEnemyPawnSquare);
+                if (nextTurnPlayer.containsEnPassantPawn()
+                        && newCoordinates.equals(nextTurnPlayer.getEnPassantPawn().getEnPassantSquare())) {
+                    ((Pawn) selectedPiece).hasDoubleMoved = false;
+                    moves.getChessPiecesMap().remove(nextTurnPlayer.getEnPassantPawn().getCoordinates());
                 }
             }
 
             try {
-                if (!((Pawn) piece).hasPromoted && piece instanceof Pawn) { //Shouldn't go in if promoting...
+                if (!((Pawn) selectedPiece).hasPromoted && selectedPiece instanceof Pawn) { //Shouldn't go in if promoting...
                     throw new ClassCastException();
                 }
             } catch (ClassCastException e) {
-                moves.getChessPiecesMap().put(newCoordinates, piece);
-                moves.getChessPiecesMap().remove(piece.getCoordinates());
+                moves.getChessPiecesMap().put(newCoordinates, selectedPiece);
+                moves.getChessPiecesMap().remove(selectedPiece.getCoordinates());
 
-                piece.setCoordinates(newCoordinates);
+                selectedPiece.setCoordinates(newCoordinates);
             }
 
-            if (piece instanceof King) {
-                piece.setCoordinates(newCoordinates);
+            if (selectedPiece instanceof King) {
+                selectedPiece.setCoordinates(newCoordinates);
             }
 
 
@@ -191,6 +196,8 @@ public class ChessBoardController implements Initializable {
             //Resetting protection of enemy pieces...
             moves.clearProtection(nextTurnPlayer.getPlayerPiecesColor());
 
+            nextTurnPlayer.resetEnPassant();
+
             //Switches player, resets turns and resets En passant
             if (currentPlayer.getPlayerPiecesColor().equals(Colour.WHITE)) { /**FIND DECLARATIVE WAY TO WRITE...*/
                 currentPlayer = blackPlayer;
@@ -212,7 +219,6 @@ public class ChessBoardController implements Initializable {
         fenEditor.transformBoardToFEN();
 
         //Resetting variables
-        resetEnPassant(currentPlayer.getPlayerPiecesColor());
         moves.setSelectedPiece(null);
         moves.getAttackingMovesList().clear();
         moves.getLegalMovesList().clear();
@@ -237,6 +243,7 @@ public class ChessBoardController implements Initializable {
 
             if (moves.getLegalMovesList().size() > 0) {
                 isCalculatingStalemate = false;
+                moves.setSelectedPiece(selectedPieceTemp);
                 return;
             }
         }
@@ -277,6 +284,7 @@ public class ChessBoardController implements Initializable {
     /**
      * Castling
      * - Only replaces the rook (the King moves to its correct place in movePieceByClicking())
+     *
      * @param castlingCoordinates coordinates of where the ally King goes
      */
     private void castle(String castlingCoordinates) {
@@ -318,22 +326,9 @@ public class ChessBoardController implements Initializable {
         }
     }
 
-
-    /**
-     * Resets En Passant
-     * @param colour the player pieces color
-     */
-    public void resetEnPassant(Colour colour) {
-        for (Piece piece : moves.getChessPiecesMap().values()) {
-            if (piece instanceof Pawn && piece.getColor().equals(colour)) {
-                ((Pawn) piece).hasDoubleMoved = false;
-            }
-        }
-        enPassantSquare = null;
-    }
-
     /**
      * Gets the square of the mouse press
+     *
      * @param mouseEvent the coordinates of the mouse click
      * @return chess board coordinates of the mouse click
      * @see com.koleff.chess.CoordinatesAndMoves.Coordinates for coordinates calculation

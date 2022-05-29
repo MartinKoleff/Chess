@@ -14,10 +14,6 @@ public class PawnPromotionRunnable implements Runnable {
         this.pawn = pawn;
         this.coordinates = coordinates;
     }
-
-    /**
-     * Functions
-     */
     public synchronized void requestStop() {
         this.stopRequest = true;
     }

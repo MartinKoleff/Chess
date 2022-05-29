@@ -22,19 +22,12 @@ public class Pawn extends Piece {
      */
     public boolean hasDoubleMoved = false;
     public boolean hasPromoted = false;
-
-//    private String enPassantSquare; //the square behind the pawn (where the enemy pawn will go after en passant)
+    private String enPassantSquare; //The square behind the pawn (where the opponents pawn will go after capturing by en passant)
 
     private static Stage pawnPromotionStage;
 
     /**
      * Constructors
-     */
-
-    /**
-     * @param coordinatesX
-     * @param coordinatesY
-     * @param pieceColor
      */
     public Pawn(char coordinatesX, int coordinatesY, Colour pieceColor) {
         super(coordinatesX, coordinatesY, pieceColor);
@@ -54,8 +47,23 @@ public class Pawn extends Piece {
         this.hasMoved = hasMoved;
     }
 
+
     /**
-     * Functions
+     * Getters & Setters
+     */
+    public String getEnPassantSquare() {
+        return enPassantSquare;
+    }
+
+    public void setEnPassantSquare(String enPassantSquare) {
+        this.enPassantSquare = enPassantSquare;
+    }
+
+    /**
+     * Promotion
+     * - when the pawn reaches the back rank and becomes better piece
+     * - the pawn can turn into rook, queen, bishop, knight
+     * @param coordinates the coordinates of the back rank (where the pawn will be after it moves and promotes)
      */
     public void promote(String coordinates) {
         moves.getChessPiecesMap().remove(this.getCoordinates());
@@ -67,7 +75,8 @@ public class Pawn extends Piece {
     }
 
     /**
-     * Menu with all figures (except King and Pawn) from which the Pawn turns into when it reaches the back rank (y = 1 or y = 8)
+     * Opens menu with all promotion figures
+     * @param coordinates the coordinates of the back rank (where the pawn will be after it moves and promotes)
      */
     private synchronized void openPawnPromotion(String coordinates) {
         Parent pawnPromotionRoot = null;
@@ -111,8 +120,8 @@ public class Pawn extends Piece {
 
     @Override
     public void move() {
-        int coordinatesX = this.getCoordinatesXInt();
-        int coordinatesY = this.getCoordinatesY();
+        int coordinatesX;
+        int coordinatesY;
 
         String coordinatesUpperSquare;
         String coordinatesUpperLeftSquare = null;
@@ -123,6 +132,10 @@ public class Pawn extends Piece {
 
         //BLACK UP
         if (this.getColor().equals(Colour.BLACK)) {
+            coordinatesX = this.getCoordinatesXInt();
+            coordinatesY = this.getCoordinatesY();
+
+            setEnPassantSquare();
             coordinatesUpperSquare = getCoordinatesToString(coordinatesX, coordinatesY + 1);
 
             if (coordinatesX - 1 > 0) {
@@ -153,6 +166,7 @@ public class Pawn extends Piece {
             coordinatesX = this.getCoordinatesXInt();
             coordinatesY = this.getCoordinatesY();
 
+            setEnPassantSquare();
             coordinatesUpperSquare = getCoordinatesToString(coordinatesX, coordinatesY - 1);
 
             if (coordinatesX - 1 > 0) {
@@ -197,53 +211,49 @@ public class Pawn extends Piece {
 
         //En Passant
         if (!isCalculatingAttackingMoves && !isCalculatingProtection) {
-            checkForEnPassant(coordinatesEnPassantLeftSquare, coordinatesY);
-            checkForEnPassant(coordinatesEnPassantRightSquare, coordinatesY);
+            checkForEnPassant(coordinatesEnPassantLeftSquare);
+            checkForEnPassant(coordinatesEnPassantRightSquare);
         }
         hasToBreak = false;
     }
 
     /**
-     * Checks for En Passant
-     * @param coordinates
-     * @param coordinatesY Y coordinates of the current players pawn
+     * Used to set the en passant square
+     * @see #enPassantSquare
      */
-    public void checkForEnPassant(String coordinates, int coordinatesY) {
+    private void setEnPassantSquare() {
+        if (this.getColor().equals(Colour.WHITE) && coordinatesY + 1 < 8
+                && !moves.getChessPiecesMap().containsKey(this.coordinatesX + "" + (this.coordinatesY + 1))) {
+            this.enPassantSquare = this.coordinatesX + "" + (this.coordinatesY + 1);
+        } else if (this.getColor().equals(Colour.BLACK) && coordinatesY - 1 > 0
+                && !moves.getChessPiecesMap().containsKey(this.coordinatesX + "" + (this.coordinatesY - 1))) {
+            this.enPassantSquare = this.coordinatesX + "" + (this.coordinatesY - 1);
+        }
+    }
+
+    /**
+     * Checks for En Passant
+     *
+     * @param enemyPawnSquare the square of the enemy pawn (that can be taken with en passant)
+     */
+    public void checkForEnPassant(String enemyPawnSquare) {
         try {
-            if (((Pawn) moves.getChessPiecesMap().get(coordinates)).hasDoubleMoved) { //the Pawn that is going to get taken with En Passant...
-                if (moves.getChessPiecesMap().get(coordinates).getColor().equals(Colour.BLACK)
-                        && (moves.getSelectedPiece().getColor().equals(Colour.WHITE))) {
-                    if (this.getCoordinatesXInt() > Coordinates.calculateX(coordinates.charAt(0))) {
-                        enPassantSquare = getCoordinatesToString(this.getCoordinatesXInt() - 1, coordinatesY - 1);
-                        enPassantEnemyPawnSquare = getCoordinatesToString(this.getCoordinatesXInt() - 1, coordinatesY);
-                    } else {
-                        enPassantSquare = getCoordinatesToString(this.getCoordinatesXInt() + 1, coordinatesY - 1);
-                        enPassantEnemyPawnSquare = getCoordinatesToString(this.getCoordinatesXInt() + 1, coordinatesY);
-                    }
-                } else if (moves.getChessPiecesMap().get(coordinates).getColor().equals(Colour.WHITE)
-                        && (moves.getSelectedPiece().getColor().equals(Colour.BLACK))) {
-                    if (this.getCoordinatesXInt() > Coordinates.calculateX(coordinates.charAt(0))) {
-                        enPassantSquare = getCoordinatesToString(this.getCoordinatesXInt() - 1, coordinatesY + 1);
-                        enPassantEnemyPawnSquare = getCoordinatesToString(this.getCoordinatesXInt() - 1, coordinatesY);
-                    } else {
-                        enPassantSquare = getCoordinatesToString(this.getCoordinatesXInt() + 1, coordinatesY + 1);
-                        enPassantEnemyPawnSquare = getCoordinatesToString(this.getCoordinatesXInt() + 1, coordinatesY);
-                    }
-                }
+            if (((Pawn) moves.getChessPiecesMap().get(enemyPawnSquare)).hasDoubleMoved
+                    && nextTurnPlayer.containsEnPassantPawn()) {
 
                 //Check for discovery...
-                Pawn enemyPawn = (Pawn) moves.getChessPiecesMap().get(enPassantEnemyPawnSquare);
-                moves.getChessPiecesMap().remove(enPassantEnemyPawnSquare);
+                Pawn enemyPawn = nextTurnPlayer.getEnPassantPawn();
+                moves.getChessPiecesMap().remove(enemyPawn.getCoordinates());
                 moves.getChessPiecesMap().remove(moves.getSelectedPiece().getCoordinates());
-                moves.getChessPiecesMap().put(enPassantSquare, moves.getSelectedPiece());
+                moves.getChessPiecesMap().put(enemyPawn.enPassantSquare, moves.getSelectedPiece());
 
                 if (!currentPlayer.checkForKingChecks()) {
-                    moves.showLegalMove(enPassantSquare);
-                    System.out.printf("En Passant -> %s\n", enPassantSquare);
+                    moves.showLegalMove(enemyPawn.enPassantSquare);
+                    System.out.printf("En Passant -> %s\n", enemyPawn.enPassantSquare);
                 }
 
                 moves.getChessPiecesMap().put(enemyPawn.getCoordinates(), enemyPawn);
-                moves.getChessPiecesMap().remove(enPassantSquare);
+                moves.getChessPiecesMap().remove(enemyPawn.enPassantSquare);
                 moves.getChessPiecesMap().put(moves.getSelectedPiece().getCoordinates(), moves.getSelectedPiece());
             }
         } catch (NullPointerException e) {
