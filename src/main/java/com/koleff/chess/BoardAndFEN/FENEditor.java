@@ -7,6 +7,9 @@ import javafx.scene.image.Image;
 
 import static com.koleff.chess.BoardAndFEN.ChessBoardController.*;
 
+/**
+ * Not finished... (Coming soon)
+ */
 public class FENEditor {
     private StringBuilder boardToFEN = new StringBuilder();
     private String pieceTypeFEN = null;
@@ -15,17 +18,17 @@ public class FENEditor {
         String coordinates;
         int emptySpacesCounter = 0;
 
-            for (int y = 8; y >= 1; y--) {
-                for (char x = 'a'; x <= 'h'; x++) {
-                    coordinates = x + "" + y;
+        for (int y = 8; y >= 1; y--) {
+            for (char x = 'a'; x <= 'h'; x++) {
+                coordinates = x + "" + y;
 
                 if (moves.getChessPiecesMap().containsKey(coordinates)) {
                     transformPieceToFEN(moves.getChessPiecesMap().get(coordinates));
 
-                    if(emptySpacesCounter != 0) {
+                    if (emptySpacesCounter != 0) {
                         boardToFEN.append(emptySpacesCounter)
                                 .append(pieceTypeFEN);
-                    }else{
+                    } else {
                         boardToFEN.append(pieceTypeFEN);
                     }
                     emptySpacesCounter = 0;
@@ -33,51 +36,51 @@ public class FENEditor {
                     emptySpacesCounter++;
                 }
             }
-            if(emptySpacesCounter == 8){
+            if (emptySpacesCounter == 8) {
                 boardToFEN.append("8/");
-            }else if(boardToFEN.toString().split("/").length < 7) {
+            } else if (boardToFEN.toString().split("/").length < 7) {
                 boardToFEN.append('/');
             }
             emptySpacesCounter = 0;
         }
 
         //Adds to the FEN the current players turn color
-        switch (currentPlayer.getPlayerPiecesColor()){
+        switch (currentPlayer.getPlayerPiecesColor()) {
             case BLACK -> boardToFEN.append(" b");
             case WHITE -> boardToFEN.append(" w");
         }
 
         //Adds to the FEN castling right
-        if(whitePlayer.canCastle){  //TO FIX...
+        if (whitePlayer.canCastle) {  //TO FIX...
             //King side (Short castle)
-            if(whitePlayer.canCastleKingSide) {
+            if (whitePlayer.canCastleKingSide) {
                 boardToFEN.append("K");
             }
             //Queen side (Long castle)
-            if(whitePlayer.canCastleQueenSide) {
+            if (whitePlayer.canCastleQueenSide) {
                 boardToFEN.append("Q");
             }
-        }else{
+        } else {
             boardToFEN.append('-');
         }
 
-        if(blackPlayer.canCastle){
+        if (blackPlayer.canCastle) {
             //King side (Short castle)
-            if(blackPlayer.canCastleKingSide) {
+            if (blackPlayer.canCastleKingSide) {
                 boardToFEN.append("k");
             }
             //Queen side (Long castle)
-            if(blackPlayer.canCastleQueenSide) {
+            if (blackPlayer.canCastleQueenSide) {
                 boardToFEN.append("q");
             }
-        }else{
+        } else {
             boardToFEN.append('-');
         }
 
         //Adds to the FEN  En Passant (enemy pawn square)
-        if(moves.getSelectedPiece() instanceof  Pawn && moves.enPassantSquare != null){
+        if (moves.getSelectedPiece() instanceof Pawn && moves.enPassantSquare != null) {
             boardToFEN.append(moves.enPassantEnemyPawnSquare);
-        }else{
+        } else {
             boardToFEN.append(" -");
         }
 
@@ -90,6 +93,7 @@ public class FENEditor {
      * Transforms the type of the piece and it's color to FEN
      * - white pieces are with capital letters
      * - knight is with the letter 'n' because the king is with the letter 'k'
+     *
      * @param piece piece to transform
      */
     private void transformPieceToFEN(Piece piece) {
