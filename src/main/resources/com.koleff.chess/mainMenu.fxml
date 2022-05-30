@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.koleff.chess.MainMenu.Controller">
    <bottom>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="openChessBoardButton" layoutX="225.0" layoutY="85.0" mnemonicParsing="false" onAction="#openChessBoard" prefHeight="30.0" prefWidth="150.0" text="Enter the game" />
+            <Button fx:id="openChessBoardButton" layoutX="68.0" layoutY="85.0" mnemonicParsing="false"
+                    onAction="#openChessBoard" prefHeight="30.0" prefWidth="150.0" text="Enter the game" />
+            <Button fx:id="loadGameButton" layoutX="378.0" layoutY="85.0" mnemonicParsing="false"
+                    onAction="#loadGame" prefHeight="30.0" prefWidth="150.0" text="Load previous game" />
          </children>
       </AnchorPane>
    </bottom>

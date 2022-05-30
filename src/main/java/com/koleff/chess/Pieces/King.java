@@ -8,7 +8,6 @@ public class King extends Piece {
     /**
      * Fields
      */
-    private boolean isInCheck = false;
 
     /**
      * Constructors
@@ -18,26 +17,19 @@ public class King extends Piece {
         hasMoved = false;
     }
 
-    public King(char coordinatesX, int coordinatesY, Colour pieceColor, boolean isProtected, boolean hasMoved, boolean isInCheck) {
+    public King(char coordinatesX, int coordinatesY, Colour pieceColor, boolean isProtected, boolean hasMoved) {
         super(coordinatesX, coordinatesY, pieceColor);
         this.isProtected = isProtected;
         this.hasMoved = hasMoved;
-        this.isInCheck = isInCheck;
     }
 
     /**
      * Functions
      */
-    public void setInCheck(boolean inCheck) {
-        isInCheck = inCheck;
-    }
-    public boolean isInCheck() {
-        return isInCheck;
-    }
 
     @Override
     public King copy() {
-        return new King(coordinatesX, coordinatesY, pieceColor, isProtected, hasMoved, isInCheck);
+        return new King(coordinatesX, coordinatesY, pieceColor, isProtected, hasMoved);
     }
 
     @Override

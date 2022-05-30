@@ -1,13 +1,13 @@
 package com.koleff.chess.Pieces;
 
-public abstract class Piece {
+public abstract class Piece{
     /**
      * Fields
      */
-    protected char coordinatesX; //a-h (1-8 converted in int values)
+    protected char coordinatesX; //a-h
     protected int coordinatesY; //1-8
     protected Colour pieceColor;
-    protected boolean isProtected = false; //if true -> can't be taken by the enemy king
+    protected boolean isProtected = false; //if true then can't be taken by the enemy king
 
     //Encapsulate... (to protected)
     public boolean hasMoved = false;
@@ -49,19 +49,33 @@ public abstract class Piece {
         return coordinatesX + Integer.toString(coordinatesY);
     }
 
-    public void setIsProtected(boolean isProtected) {
-        this.isProtected = isProtected;
-    }
-
-    public boolean getIsProtected() {
-        return isProtected;
-    }
-
     public void setCoordinates(String coordinates) {
         this.coordinatesX = coordinates.charAt(0);
         this.coordinatesY = Integer.parseInt(String.valueOf(coordinates.charAt(1)));
     }
 
+    public boolean getIsProtected() {
+        return isProtected;
+    }
+    public void setIsProtected(boolean isProtected) {
+        this.isProtected = isProtected;
+    }
+
+    public char getCoordinatesXChar() {
+        return coordinatesX;
+    }
+
+    public void setCoordinatesXChar(char coordinatesY) {
+        this.coordinatesX = coordinatesY;
+    }
+
+    public int getCoordinatesY() {
+        return coordinatesY;
+    }
+
+    public void setCoordinatesY(int coordinatesY) {
+        this.coordinatesY = coordinatesY;
+    }
 
     /**
      * Transforms char X coordinates to number value
@@ -89,20 +103,11 @@ public abstract class Piece {
         }
     }
 
-    public char getCoordinatesXChar() {
-        return coordinatesX;
+    @Override
+    public String toString(){
+        return this.getCoordinates() + " "
+                + this.getClass().getSimpleName() + " "
+                + this.getColor().toString() + " "
+                + this.hasMoved;
     }
-
-    public void setCoordinatesXChar(char coordinatesY) {
-        this.coordinatesX = coordinatesY;
-    }
-
-    public int getCoordinatesY() {
-        return coordinatesY;
-    }
-
-    public void setCoordinatesY(int coordinatesY) {
-        this.coordinatesY = coordinatesY;
-    }
-
 }

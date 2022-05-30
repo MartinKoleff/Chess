@@ -11,7 +11,9 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
+import static com.koleff.chess.BoardAndFEN.ChessBoardController.moves;
 import static com.koleff.chess.MainMenu.Main.mainMenuStage;
 
 public class Controller {
@@ -21,9 +23,15 @@ public class Controller {
     @FXML
     private Button openChessBoardButton;
 
+    @FXML
+    private Button loadGameButton;
+
+    //Encapsulate...
     public static Stage chessBoardStage;
+
     public static final int chessBoardWidth = 800;
     public static final int chessBoardHeight = 800;
+    public static boolean toLoadGame = false;
 
     @FXML
     public void openChessBoard(ActionEvent actionEvent) {
@@ -43,5 +51,11 @@ public class Controller {
 
         chessBoardStage.show();
         mainMenuStage.close();
+    }
+
+    @FXML
+    public void loadGame(ActionEvent actionEvent) {
+        //Serialization goes here...
+        openChessBoard(actionEvent);
     }
 }

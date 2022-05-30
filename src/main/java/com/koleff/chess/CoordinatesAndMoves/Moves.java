@@ -17,11 +17,24 @@ import static com.koleff.chess.BoardAndFEN.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.calculateX;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 
-public class Moves {
+public class Moves{
     /**
      * Fields
      */
-    private Map<String, Piece> chessPiecesMap = new LinkedHashMap();//String - coordinate | Piece - the piece with that coordinates
+    private Map<String, Piece> chessPiecesMap = new LinkedHashMap(){
+        @Override
+        public String toString() {
+            StringBuilder stringBuilder = new StringBuilder();
+
+             this.entrySet().forEach(e -> stringBuilder.append(((Map.Entry<String, Piece>)e).getKey())
+                    .append(" ")
+                    .append(((Map.Entry<String, Piece>)e).getValue())
+                    .append("\n")
+            );
+            return stringBuilder.toString();
+        }
+    };//String - coordinate | Piece - the piece with that coordinates
+
     private List<String> legalMovesList = new ArrayList<>(); //String - coordinates
     private List<String> attackingMovesList = new ArrayList<>(); //String - coordinates
     private Piece selectedPiece = null;
@@ -47,6 +60,10 @@ public class Moves {
 
     public Map<String, Piece> getChessPiecesMap() {
         return chessPiecesMap;
+    }
+
+    public void setChessPiecesMap(LinkedHashMap<String, Piece> chessPiecesMap) {
+        this.chessPiecesMap = chessPiecesMap;
     }
 
     public List<String> getLegalMovesList() {
@@ -504,5 +521,6 @@ public class Moves {
         String coordinates = getCoordinatesToString(coordinatesXCopy, coordinatesYCopy);
         showLegalMove(coordinates);
     }
+
 }
 

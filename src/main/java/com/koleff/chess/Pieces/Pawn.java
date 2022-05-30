@@ -262,4 +262,15 @@ public class Pawn extends Piece {
             return;
         }
     }
+
+    @Override
+    public String toString(){
+        return this.getCoordinates() + " "
+                + this.getClass().getSimpleName() + " "
+                + this.getColor().toString() + " "
+                + this.hasMoved + " "
+                + this.hasDoubleMoved + " "
+                + this.enPassantSquare + " "
+                + this.hasPromoted;
+    }
 }

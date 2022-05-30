@@ -1,5 +1,12 @@
 package com.koleff.chess.BoardAndFEN;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.koleff.chess.CoordinatesAndMoves.Moves;
+import com.koleff.chess.MainMenu.Controller;
+import com.koleff.chess.Pieces.*;
+import com.koleff.chess.Player.Player;
 import com.koleff.chess.Threads.PawnPromotionRunnable;
 import com.koleff.chess.Threads.PawnPromotionThread;
 import javafx.fxml.FXML;
@@ -9,15 +16,15 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import com.koleff.chess.CoordinatesAndMoves.Moves;
-import com.koleff.chess.Pieces.*;
-import com.koleff.chess.Player.Player;
 
 import java.net.URL;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ResourceBundle;
 
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.*;
-import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
+import static com.koleff.chess.CoordinatesAndMoves.Moves.isCalculatingCheckmate;
+import static com.koleff.chess.CoordinatesAndMoves.Moves.isCalculatingStalemate;
 import static com.koleff.chess.MainMenu.Controller.chessBoardHeight;
 import static com.koleff.chess.MainMenu.Controller.chessBoardWidth;
 
@@ -46,6 +53,7 @@ public class ChessBoardController implements Initializable {
     public static Board board;
     public static Moves moves;
     public FENEditor fenEditor;
+    private ObjectMapper mapper;
 
     /**
      * This method is called upon fxml load (before the program starts)
@@ -56,13 +64,40 @@ public class ChessBoardController implements Initializable {
         board = new Board(gridPane);
         moves = new Moves();
         fenEditor = new FENEditor();
+        mapper = new ObjectMapper();
 
 //        board.arrangeTestingBoard(); //Used for testing...
-        board.arrangeBoard();
+        if (Controller.toLoadGame) {
+            moves.setChessPiecesMap(loadBoard());
+            board.updateBoard();
+        } else {
+            board.arrangeBoard();
+        }
         fenEditor.transformBoardToFEN();
 
         System.out.println(currentPlayer.getPlayerPiecesColor() + "'s Player Turn.");
     }
+
+    /**
+     * Deserializes the map
+     */
+    private LinkedHashMap<String, Piece> loadBoard() { //TRY SERIALIZABLE INTERFACE WAY...
+        LinkedHashMap<String, Piece> loadedBoard;
+
+        String jsonInput = "{\"key\": \"value\"}"; //To change...
+        TypeReference<LinkedHashMap<String, Piece>> typeRef
+                = new TypeReference<>() {
+        };
+
+        try {
+            loadedBoard = mapper.readValue(jsonInput, typeRef);
+            return loadedBoard;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     /**
      * Determines which piece was selected by the user
@@ -218,6 +253,17 @@ public class ChessBoardController implements Initializable {
         blackPlayer.checkForCastlingRights();
         fenEditor.transformBoardToFEN();
 
+        //Serialize the chess board...
+        try {
+            mapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(moves.getChessPiecesMap().toString());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        //Serialize player...
+
+
         //Resetting variables
         moves.setSelectedPiece(null);
         moves.getAttackingMovesList().clear();
@@ -341,3 +387,6 @@ public class ChessBoardController implements Initializable {
         return coordinates;
     }
 }
+//OLD SERIALIZATION
+//Saves board...
+//        SerializationManager.save(moves.getChessPiecesMap(), "data.save");
