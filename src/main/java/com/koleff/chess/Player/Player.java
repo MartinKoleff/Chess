@@ -145,6 +145,7 @@ public class Player {
 
     /**
      * Returns the next turn player
+     *
      * @return the opposite color player
      */
     private Player getNextTurnPlayer() {
@@ -167,7 +168,7 @@ public class Player {
         if (this.hasCastled) {
             return;
         }
-        moves.calculateAttackingMoves(this.getPlayerPiecesColor());
+        moves.calculateAttackingMoves(this.getNextTurnPlayer().getPlayerPiecesColor());
 
         if (moves.castlingMovesList.isEmpty()) {
             moves.castlingMovesList.add("b1");
@@ -201,7 +202,7 @@ public class Player {
                             && !moves.getChessPiecesMap().containsKey("e8")
                             && !moves.getChessPiecesMap().containsKey("f8")
                             && !moves.getChessPiecesMap().containsKey("g8")
-                            && !moves.getAttackingMovesList().contains("e8")
+                            && !moves.getAttackingMovesList().contains("e8") //BUG GOES HERE...
                             && !moves.getAttackingMovesList().contains("f8")
                             && !moves.getAttackingMovesList().contains("g8")) {
 
@@ -267,46 +268,55 @@ public class Player {
                 .count() > 0
                 && !this.getPlayerKing().hasMoved;
 
-        this.canCastleQueenSide = !this.getPieces().stream()
-                .filter(e -> e instanceof Rook)
-                .filter(e -> !e.hasMoved)
-                .filter(e -> e.getCoordinatesXChar() == 'a')
-                .findFirst()
-                .get()
-                .hasMoved;
+        try {
+            this.canCastleQueenSide = !this.getPieces().stream()
+                    .filter(e -> e instanceof Rook)
+                    .filter(e -> !e.hasMoved)
+                    .filter(e -> e.getCoordinatesXChar() == 'a')
+                    .findFirst()
+                    .get()
+                    .hasMoved;
+        } catch (NoSuchElementException e) {
+            this.canCastleQueenSide = false;
+        }
 
-        this.canCastleKingSide = !this.getPieces().stream()
-                .filter(e -> e instanceof Rook)
-                .filter(e -> !e.hasMoved)
-                .filter(e -> e.getCoordinatesXChar() == 'h')
-                .findFirst()
-                .get()
-                .hasMoved;
+        try {
+            this.canCastleKingSide = !this.getPieces().stream()
+                    .filter(e -> e instanceof Rook)
+                    .filter(e -> !e.hasMoved)
+                    .filter(e -> e.getCoordinatesXChar() == 'h')
+                    .findFirst() //.orElseThrow()
+                    .get()//BUG GOES HERE...
+                    .hasMoved;
+        } catch (NoSuchElementException e) {
+            this.canCastleKingSide = false;
+        }
     }
 
     /**
      * Used to set the en passant pawn
+     *
      * @param enPassantPawn pawn that has double moved
-     * */
+     */
     public void setEnPassantPawn(Pawn enPassantPawn) {
         this.enPassantPawn = enPassantPawn;
     }
 
     /**
      * Check if the player contains pawn that has double moved
-     * @return true if enPassantPawn contains value
      *
+     * @return true if enPassantPawn contains value
      */
     public boolean containsEnPassantPawn() {
-        return  enPassantPawn != null;
+        return enPassantPawn != null;
     }
 
     /**
      * Get the players last pawn that has double moved
-     * @return the last pawn that has double moved
      *
+     * @return the last pawn that has double moved
      */
-    public Pawn getEnPassantPawn(){
+    public Pawn getEnPassantPawn() {
         return enPassantPawn;
     }
 
