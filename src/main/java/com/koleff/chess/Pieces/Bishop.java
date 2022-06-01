@@ -1,10 +1,12 @@
 package com.koleff.chess.Pieces;
 
+import java.io.Serializable;
+
 import static com.koleff.chess.BoardAndFEN.ChessBoardController.moves;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 
-public class Bishop extends Piece {
+public class Bishop extends Piece implements Serializable {
     /**Fields*/
 
     /**

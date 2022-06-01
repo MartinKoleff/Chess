@@ -10,13 +10,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import static com.koleff.chess.BoardAndFEN.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 import static com.koleff.chess.MainMenu.Controller.chessBoardStage;
 
-public class Pawn extends Piece {
+public class Pawn extends Piece implements Serializable {
     /**
      * Fields
      */

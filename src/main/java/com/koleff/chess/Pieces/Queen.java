@@ -1,7 +1,9 @@
 package com.koleff.chess.Pieces;
 
 
-public class Queen extends Piece{
+import java.io.Serializable;
+
+public class Queen extends Piece implements Serializable {
     /**
      * Constructors
      */

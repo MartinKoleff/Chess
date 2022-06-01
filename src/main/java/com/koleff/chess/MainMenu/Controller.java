@@ -55,7 +55,7 @@ public class Controller {
 
     @FXML
     public void loadGame(ActionEvent actionEvent) {
-        //Serialization goes here...
+        toLoadGame = true;
         openChessBoard(actionEvent);
     }
 }

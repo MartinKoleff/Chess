@@ -7,6 +7,8 @@ import com.koleff.chess.CoordinatesAndMoves.Moves;
 import com.koleff.chess.MainMenu.Controller;
 import com.koleff.chess.Pieces.*;
 import com.koleff.chess.Player.Player;
+import com.koleff.chess.SerializationManager.MapSerializationManager;
+import com.koleff.chess.SerializationManager.SerializationManager;
 import com.koleff.chess.Threads.PawnPromotionRunnable;
 import com.koleff.chess.Threads.PawnPromotionThread;
 import javafx.fxml.FXML;
@@ -17,6 +19,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,8 +57,6 @@ public class ChessBoardController implements Initializable {
     public static Board board;
     public static Moves moves;
     public FENEditor fenEditor;
-    private ObjectMapper mapper;
-
     /**
      * This method is called upon fxml load (before the program starts)
      */
@@ -64,11 +66,16 @@ public class ChessBoardController implements Initializable {
         board = new Board(gridPane);
         moves = new Moves();
         fenEditor = new FENEditor();
-        mapper = new ObjectMapper();
 
 //        board.arrangeTestingBoard(); //Used for testing...
         if (Controller.toLoadGame) {
-            moves.setChessPiecesMap(loadBoard());
+//            moves.setChessPiecesMap(loadBoard()); //Using Jenkins library...
+            try {
+                moves.setChessPiecesMap((LinkedHashMap<String, Piece>)
+                        SerializationManager.load("src/main/resources/com.koleff.chess/data.txt"));
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
             board.updateBoard();
         } else {
             board.arrangeBoard();
@@ -78,25 +85,7 @@ public class ChessBoardController implements Initializable {
         System.out.println(currentPlayer.getPlayerPiecesColor() + "'s Player Turn.");
     }
 
-    /**
-     * Deserializes the map
-     */
-    private LinkedHashMap<String, Piece> loadBoard() { //TRY SERIALIZABLE INTERFACE WAY...
-        LinkedHashMap<String, Piece> loadedBoard;
 
-        String jsonInput = "{\"key\": \"value\"}"; //To change...
-        TypeReference<LinkedHashMap<String, Piece>> typeRef
-                = new TypeReference<>() {
-        };
-
-        try {
-            loadedBoard = mapper.readValue(jsonInput, typeRef);
-            return loadedBoard;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
 
     /**
@@ -253,11 +242,16 @@ public class ChessBoardController implements Initializable {
         blackPlayer.checkForCastlingRights();
         fenEditor.transformBoardToFEN();
 
-        //Serialize the chess board...
+        //Serialize...
         try {
-            mapper.writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(moves.getChessPiecesMap().toString());
-        } catch (JsonProcessingException e) {
+            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "src/main/resources/com.koleff.chess/data.txt");
+//            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "resources/com.koleff.chess/data.txt");
+//            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "/com.koleff.chess/data.txt");
+//            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "com.koleff.chess/data.txt");
+//            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "data.txt");
+//            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "../data.txt");
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -390,3 +384,12 @@ public class ChessBoardController implements Initializable {
 //OLD SERIALIZATION
 //Saves board...
 //        SerializationManager.save(moves.getChessPiecesMap(), "data.save");
+
+
+//Serialize the chess board... (using Jenkins library)
+//        try {
+//            mapper.writerWithDefaultPrettyPrinter()
+//                    .writeValueAsString(moves.getChessPiecesMap().toString());
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }

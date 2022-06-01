@@ -1,6 +1,8 @@
 package com.koleff.chess.Pieces;
 
-public abstract class Piece{
+import java.io.Serializable;
+
+public abstract class Piece implements Serializable{
     /**
      * Fields
      */

@@ -10,6 +10,7 @@ import com.koleff.chess.Player.Player;
 import com.koleff.chess.Threads.CalculatingAttackingMovesRunnable;
 import com.koleff.chess.Threads.CalculatingAttackingMovesThread;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,7 @@ import static com.koleff.chess.BoardAndFEN.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.calculateX;
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.getCoordinatesToString;
 
-public class Moves{
+public class Moves implements Serializable {
     /**
      * Fields
      */
@@ -28,7 +29,7 @@ public class Moves{
 
              this.entrySet().forEach(e -> stringBuilder.append(((Map.Entry<String, Piece>)e).getKey())
                     .append(" ")
-                    .append(((Map.Entry<String, Piece>)e).getValue())
+                    .append(((Map.Entry<String, Piece>)e).getValue()) //Compiler doesn't recognize the map value types... (implicit casting)
                     .append("\n")
             );
             return stringBuilder.toString();
