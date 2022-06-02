@@ -2,7 +2,7 @@
 
 This is my first big project. I have worked on it alone with almost no help from youtube / other chess tutorials. I learned a lot going thru the project. After many sleepless nights and painful days l was able to complete it! It will certantly not be perfect but this is my first project non the less! There are a few commits because l learned how to push and commit during making the project and l didn't believe l will even complete it.
 
-This project was made with JavaFX and Maven. Javadoc convention used for the comments. Guava used for the Stopwatch class.
+This project was made with JavaFX and Maven. Javadoc convention used for the comments. Guava library used for the Stopwatch class. Apache Commons IO library used for Serialization file writing.
 
 This project includes the following functionalities:
 1) En passant
@@ -13,6 +13,7 @@ This project includes the following functionalities:
 
 Additions to the project:
 1) Load the game from where you have left it (Serialization)
+2) 
 
 Coming soon:
 1) FEN notation custom boards generator (export a board as FEN)
