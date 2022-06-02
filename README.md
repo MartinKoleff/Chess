@@ -13,7 +13,6 @@ This project includes the following functionalities:
 
 Additions to the project:
 1) Load the game from where you have left it (Serialization)
-2) 
 
 Coming soon:
 1) FEN notation custom boards generator (export a board as FEN)
