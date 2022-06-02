@@ -5,11 +5,12 @@ module com.koleff.chess {
     requires java.desktop;
     requires com.google.common;
     requires com.fasterxml.jackson.databind;
+    requires org.apache.commons.io;
 
     opens com.koleff.chess.MainMenu to javafx.fxml;
 //    exports com.koleff.chess.MainMenu;
 
-    opens com.koleff.chess.BoardAndFEN to javafx.fxml, com.google.common, com.fasterxml.jackson.databind;
+    opens com.koleff.chess.BoardAndFEN to javafx.fxml, com.google.common, com.fasterxml.jackson.databind, org.apache.commons.io;
 //    exports com.koleff.chess.Board;
 
     opens com.koleff.chess.Timer to com.google.common;

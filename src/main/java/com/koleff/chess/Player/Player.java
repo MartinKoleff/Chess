@@ -3,6 +3,7 @@ package com.koleff.chess.Player;
 import com.koleff.chess.Pieces.*;
 import com.koleff.chess.Timer.Clock;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -10,7 +11,7 @@ import static com.koleff.chess.BoardAndFEN.ChessBoardController.*;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.*;
 
 
-public class Player {
+public class Player implements Serializable {
     /**
      * Fields
      */

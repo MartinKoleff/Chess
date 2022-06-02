@@ -18,10 +18,13 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -57,27 +60,44 @@ public class ChessBoardController implements Initializable {
     public static Board board;
     public static Moves moves;
     public FENEditor fenEditor;
+
+    private List<Serializable> serializationList;
+
     /**
      * This method is called upon fxml load (before the program starts)
      */
+    @SuppressWarnings("Implisit casting")
     public void initialize(URL location, ResourceBundle resources) {
         gridPane.setAlignment(Pos.CENTER_LEFT);
 
         board = new Board(gridPane);
         moves = new Moves();
         fenEditor = new FENEditor();
-
+        serializationList = new ArrayList<>();
 //        board.arrangeTestingBoard(); //Used for testing...
+
         if (Controller.toLoadGame) {
 //            moves.setChessPiecesMap(loadBoard()); //Using Jenkins library...
             try {
-                moves.setChessPiecesMap((LinkedHashMap<String, Piece>)
-                        SerializationManager.load("src/main/resources/com.koleff.chess/data.txt"));
+                //Old way...
+//                moves.setChessPiecesMap((LinkedHashMap<String, Piece>)
+//                        SerializationManager.load("src/main/resources/com.koleff.chess/data.txt"));
+//                currentPlayer = (Player) SerializationManager.load("src/main/resources/com.koleff.chess/data.txt");
+
+                serializationList = (List<Serializable>) SerializationManager.load("src/main/resources/com.koleff.chess/data.txt");
+                moves.setChessPiecesMap((LinkedHashMap<String, Piece>) serializationList.get(0));
+                currentPlayer = (Player) serializationList.get(1);
+
+                clearSerializationFile();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
+
+                clearSerializationFile();
             }
             board.updateBoard();
         } else {
+            clearSerializationFile();
+
             board.arrangeBoard();
         }
         fenEditor.transformBoardToFEN();
@@ -85,7 +105,13 @@ public class ChessBoardController implements Initializable {
         System.out.println(currentPlayer.getPlayerPiecesColor() + "'s Player Turn.");
     }
 
-
+    private void clearSerializationFile() {
+        try {
+            FileUtils.write(new File("src/main/resources/com.koleff.chess/data.txt"), "");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     /**
@@ -177,7 +203,7 @@ public class ChessBoardController implements Initializable {
             }
 
             try {
-                if (!((Pawn) selectedPiece).hasPromoted && selectedPiece instanceof Pawn) { //Shouldn't go in if promoting...
+                if (!((Pawn) selectedPiece).hasPromoted) { //Shouldn't go in if promoting...
                     throw new ClassCastException();
                 }
             } catch (ClassCastException e) {
@@ -242,20 +268,26 @@ public class ChessBoardController implements Initializable {
         blackPlayer.checkForCastlingRights();
         fenEditor.transformBoardToFEN();
 
-        //Serialize...
+        //Serialize the board and the current player...
         try {
-            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "src/main/resources/com.koleff.chess/data.txt");
 //            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "resources/com.koleff.chess/data.txt");
 //            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "/com.koleff.chess/data.txt");
 //            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "com.koleff.chess/data.txt");
 //            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "data.txt");
 //            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "../data.txt");
 
+            //Old way...
+//            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "src/main/resources/com.koleff.chess/data.txt");
+//            SerializationManager.save((Serializable) currentPlayer, "src/main/resources/com.koleff.chess/data.txt");
+            serializationList.clear();
+            serializationList.add((Serializable) moves.getChessPiecesMap());
+            serializationList.add(currentPlayer);
+
+            SerializationManager.save((Serializable) serializationList, "src/main/resources/com.koleff.chess/data.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        //Serialize player...
 
 
         //Resetting variables
