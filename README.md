@@ -11,6 +11,9 @@ This project includes the following functionalities:
 4) Checkmate
 5) Pawn promotion
 
+Additions to the project:
+1) Load the game from where you have left it (Serialization)
+
 Coming soon:
 1) FEN notation custom boards generator (export a board as FEN)
 2) Clock (custom time modes)
@@ -22,8 +25,7 @@ Coming soon:
 8) Rewatch a game (game positions save as FEN in a .txt file)
 9) Multiplayer (with lobby system / code to enter)
 10) Chat
-11) Serialization (to load a game)
-12) Unit Testing with JUnit
-13) Chess AI (bot for singleplayer)
-14) Spring Framework integration
-15) Export to Android / IOS
+11) Unit Testing with JUnit
+12) Chess AI (bot for singleplayer)
+13) Spring Framework integration
+14) Export to Android / IOS
