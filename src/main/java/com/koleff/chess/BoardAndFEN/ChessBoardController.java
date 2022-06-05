@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 
 import static com.koleff.chess.CoordinatesAndMoves.Coordinates.*;
 import static com.koleff.chess.CoordinatesAndMoves.Moves.isCalculatingCheckmate;
@@ -62,6 +63,7 @@ public class ChessBoardController implements Initializable {
     public FENEditor fenEditor;
 
     private List<Serializable> serializationList;
+    private List<LinkedHashMap<String, Piece>> allPositions;
 
     /**
      * This method is called upon fxml load (before the program starts)
@@ -70,26 +72,24 @@ public class ChessBoardController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         gridPane.setAlignment(Pos.CENTER_LEFT);
 
+        //Initialize fields
         board = new Board(gridPane);
         moves = new Moves();
         fenEditor = new FENEditor();
         serializationList = new ArrayList<>();
+        allPositions = new ArrayList<>();
+
 //        board.arrangeTestingBoard(); //Used for testing...
 
         if (Controller.toLoadGame) {
-//            moves.setChessPiecesMap(loadBoard()); //Using Jenkins library...
             try {
-                //Old way...
-//                moves.setChessPiecesMap((LinkedHashMap<String, Piece>)
-//                        SerializationManager.load("src/main/resources/com.koleff.chess/data.txt"));
-//                currentPlayer = (Player) SerializationManager.load("src/main/resources/com.koleff.chess/data.txt");
-
                 serializationList = (List<Serializable>) SerializationManager.load("src/main/resources/com.koleff.chess/data.txt");
                 moves.setChessPiecesMap((LinkedHashMap<String, Piece>) serializationList.get(0));
                 currentPlayer = (Player) serializationList.get(1);
 
                 clearSerializationFile();
             } catch (IOException | ClassNotFoundException e) {
+                System.out.println("There was a problem with the deserialization of the file.");
                 e.printStackTrace();
 
                 clearSerializationFile();
@@ -97,14 +97,16 @@ public class ChessBoardController implements Initializable {
             board.updateBoard();
         } else {
             clearSerializationFile();
-
             board.arrangeBoard();
         }
         fenEditor.transformBoardToFEN();
-
         System.out.println(currentPlayer.getPlayerPiecesColor() + "'s Player Turn.");
     }
 
+    /**
+     * Used to clear the data.txt file (the file for the serialization)
+     * - Using Apache common io library
+     */
     private void clearSerializationFile() {
         try {
             FileUtils.write(new File("src/main/resources/com.koleff.chess/data.txt"), "");
@@ -276,9 +278,6 @@ public class ChessBoardController implements Initializable {
 //            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "data.txt");
 //            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "../data.txt");
 
-            //Old way...
-//            SerializationManager.save((Serializable) moves.getChessPiecesMap(), "src/main/resources/com.koleff.chess/data.txt");
-//            SerializationManager.save((Serializable) currentPlayer, "src/main/resources/com.koleff.chess/data.txt");
             serializationList.clear();
             serializationList.add((Serializable) moves.getChessPiecesMap());
             serializationList.add(currentPlayer);
@@ -287,7 +286,6 @@ public class ChessBoardController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
 
         //Resetting variables
@@ -323,8 +321,12 @@ public class ChessBoardController implements Initializable {
 
         if (moves.getLegalMovesList().size() == 0 && !nextTurnPlayer.isInCheck) {
             nextTurnPlayer.isStalemated = true;
+            isCalculatingStalemate = false;
+            return;
         }
         isCalculatingStalemate = false;
+
+        checkForThreeMoveRepetitionStalemate();
     }
 
     /**
@@ -412,16 +414,52 @@ public class ChessBoardController implements Initializable {
 
         return coordinates;
     }
+
+
+    /**
+     * Checks for three move repetition stalemate
+     * - if the same position is repeated 3 times then it is stalemate
+     *
+     * @return true if a position is repeated 3 times
+     */
+    private void checkForThreeMoveRepetitionStalemate() { //USE PREDICATE<Piece>...
+        int repetitionCounter = 1;
+        List<Pawn> oldPositionPawns;
+        for (LinkedHashMap oldPosition : allPositions) {
+            oldPositionPawns = oldPosition.values().stream()
+                    .filter(e -> e instanceof Pawn).toList();
+
+            if (!oldPositionPawns.equals(moves.getChessPiecesMap().values().stream()
+                    .filter(e -> e instanceof Pawn).toList())) { //If all pawns are the same as the current position (used for optimizing)
+                allPositions.clear();
+                allPositions.add(moves.getChessPiecesMap());
+                return;
+            } else if(oldPosition.equals(moves.getChessPiecesMap())){ //If one of the old positions is the same as the current one
+                repetitionCounter++;
+            }
+
+            if (repetitionCounter == 3) { //CHECK WHICH PLAYER IS STALEMATED...
+                nextTurnPlayer.isStalemated = true;
+                return;
+            }
+        }
+        allPositions.add(moves.getChessPiecesMap());
+    }
 }
-//OLD SERIALIZATION
-//Saves board...
-//        SerializationManager.save(moves.getChessPiecesMap(), "data.save");
+//        Predicate<LinkedHashMap<String, Piece>> isSamePositionPredicate = e -> e.get();
+//e -> moves.getChessPiecesMap().get(e.getCoordinates()) instanceof e;
 
+//            isSamePosition = oldPosition.values().stream()
+//                    .allMatch(e -> moves.getChessPiecesMap().get(((Piece)e).getCoordinates()) instanceof e);
 
-//Serialize the chess board... (using Jenkins library)
-//        try {
-//            mapper.writerWithDefaultPrettyPrinter()
-//                    .writeValueAsString(moves.getChessPiecesMap().toString());
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
+//            isSamePosition = oldPosition.values().stream()
+//                    .allMatch(e -> isSamePositionPredicate.test((Piece) e));
+//        Class<T> pieceClass =
+//Predicate<T> isSamePositionPredicate = piece -> moves.getChessPiecesMap().get(piece.getCoordinates()) instanceof piece;
+
+//            allPawnsHaveMoved = oldPosition.values().stream()
+//                    .filter(e -> moves.getChessPiecesMap().get(((Piece) e).getCoordinates()) instanceof Pawn)
+//                    .count() ==
+//                    moves.getChessPiecesMap().values().stream()
+//                    .filter(e -> e instanceof Pawn).count();
+//

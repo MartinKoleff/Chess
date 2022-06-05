@@ -22,7 +22,7 @@ public class Moves implements Serializable {
     /**
      * Fields
      */
-    private Map<String, Piece> chessPiecesMap = new LinkedHashMap(){
+    private LinkedHashMap<String, Piece> chessPiecesMap = new LinkedHashMap(){
         @Override
         public String toString() {
             StringBuilder stringBuilder = new StringBuilder();
@@ -59,7 +59,7 @@ public class Moves implements Serializable {
         return attackingMovesList;
     }
 
-    public Map<String, Piece> getChessPiecesMap() {
+    public LinkedHashMap<String, Piece> getChessPiecesMap() {
         return chessPiecesMap;
     }
 
