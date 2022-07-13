@@ -22,7 +22,7 @@ public class Moves implements Serializable {
     /**
      * Fields
      */
-    private LinkedHashMap<String, Piece> chessPiecesMap = new LinkedHashMap(){
+    private HashMap<String, Piece> chessPiecesMap = new HashMap(){
         @Override
         public String toString() {
             StringBuilder stringBuilder = new StringBuilder();
@@ -34,6 +34,34 @@ public class Moves implements Serializable {
             );
             return stringBuilder.toString();
         }
+
+//        @Override
+//        public boolean equals(Object o){
+//            Map oldPosition = (HashMap<String, Piece>)o;
+//
+////            for (Piece oldPositionCoordinates : (List<Piece>)oldPosition.keySet()){
+////                if(!this.containsKey(oldPositionCoordinates) && !this.containsValue(oldPosition.get(oldPositionCoordinates))){
+////                    return false;
+////                }
+////            }
+////            return true;
+//
+//            //Try with piece.equals...
+//            int counter = 0;
+//            for (Piece piece : (List<Piece>)this.values()){ //ClassCastException here...
+//                for (String oldPositionCoordinates : (List<String>)oldPosition.keySet()) {
+//                    if (piece.equals(oldPosition.get(oldPositionCoordinates))){
+//                        counter++;
+//                        continue;
+//                    }
+//                }
+//                if(counter == 0){
+//                    return false;
+//                }
+//                counter = 0;
+//            }
+//            return true;
+//        }
     };//String - coordinate | Piece - the piece with that coordinates
 
     private List<String> legalMovesList = new ArrayList<>(); //String - coordinates
@@ -59,7 +87,7 @@ public class Moves implements Serializable {
         return attackingMovesList;
     }
 
-    public LinkedHashMap<String, Piece> getChessPiecesMap() {
+    public HashMap<String, Piece> getChessPiecesMap() {
         return chessPiecesMap;
     }
 
@@ -328,7 +356,7 @@ public class Moves implements Serializable {
      * @see #checkIfMoveIsIllegal(String) where this function is used
      * @see #calculateAttackingMoves(Colour)
      */
-    private boolean checkIfKingCanBeDiscovered(String coordinates, Player player) {
+    private boolean checkIfKingCanBeDiscovered(String coordinates, Player player) { //checkKingDiscoverable
         Piece currentPiece = selectedPiece.copy();
         Piece tempPiece = selectedPiece.copy();
 
