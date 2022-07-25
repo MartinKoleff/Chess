@@ -433,13 +433,12 @@ public class ChessBoardController implements Initializable {
         //Check all previous positions...
         for (HashMap oldPosition : allPositionsList) {
 
-            //Doesn't compare hasMoved... //OVERRIDE containsKey() / containsValue()
-            if(moves.getChessPiecesMap().equals(oldPosition)){ //implement Piece.equals() inside Map.equals()
+            if(moves.getChessPiecesMap().equals(oldPosition)){ //Don't compare piece.hasMoved
                 repetitionCounter++;
             }
 
-            if (repetitionCounter == 3) { //CHECK WHICH PLAYER IS STALEMATED... // == 6 ?
-                System.out.printf("%s player has been stalemated via 3 move repetition", nextTurnPlayer.getPlayerPiecesColor());
+            if (repetitionCounter == 3) { //CHECK WHICH PLAYER IS STALEMATED...
+                System.out.printf("%s player has been stalemated via 3 move repetition\n", nextTurnPlayer.getPlayerPiecesColor());
                 nextTurnPlayer.isStalemated = true;
                 return;
             }

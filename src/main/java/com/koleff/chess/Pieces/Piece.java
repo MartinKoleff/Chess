@@ -121,7 +121,7 @@ public abstract class Piece implements Serializable, Comparable{
 
     @Override
     public boolean equals(Object o){
-        return this.compareTo((Piece) o) == 0;
+        return this.compareTo((Piece) o) == 1;
     }
 
     @Override

@@ -35,33 +35,28 @@ public class Moves implements Serializable {
             return stringBuilder.toString();
         }
 
-//        @Override
-//        public boolean equals(Object o){
-//            Map oldPosition = (HashMap<String, Piece>)o;
-//
-////            for (Piece oldPositionCoordinates : (List<Piece>)oldPosition.keySet()){
-////                if(!this.containsKey(oldPositionCoordinates) && !this.containsValue(oldPosition.get(oldPositionCoordinates))){
-////                    return false;
-////                }
-////            }
-////            return true;
-//
-//            //Try with piece.equals...
-//            int counter = 0;
-//            for (Piece piece : (List<Piece>)this.values()){ //ClassCastException here...
-//                for (String oldPositionCoordinates : (List<String>)oldPosition.keySet()) {
-//                    if (piece.equals(oldPosition.get(oldPositionCoordinates))){
-//                        counter++;
-//                        continue;
-//                    }
-//                }
-//                if(counter == 0){
-//                    return false;
-//                }
-//                counter = 0;
-//            }
-//            return true;
-//        }
+        @Override
+        public boolean equals(Object o){
+            Map oldPosition = (HashMap<String, Piece>)o;
+            List<Piece> currentPositionPiecesList = new ArrayList<>(this.values());
+            List<String> oldPositionCoordinatesList = new ArrayList<>(oldPosition.keySet());
+            int counter = 0;
+
+            //Checks if all pieces from current position exist in the old position //FIND BETTER WAY...
+            for (Piece piece : currentPositionPiecesList){
+                for (String oldPositionCoordinates : oldPositionCoordinatesList) {
+                    if (piece.equals(oldPosition.get(oldPositionCoordinates))){
+                        counter++;
+                        break;
+                    }
+                }
+                if(counter == 0){
+                    return false;
+                }
+                counter = 0;
+            }
+            return true;
+        }
     };//String - coordinate | Piece - the piece with that coordinates
 
     private List<String> legalMovesList = new ArrayList<>(); //String - coordinates
@@ -550,6 +545,20 @@ public class Moves implements Serializable {
         String coordinates = getCoordinatesToString(coordinatesXCopy, coordinatesYCopy);
         showLegalMove(coordinates);
     }
-
 }
 
+//            List<Piece> currentPositionPiecesList = (List<Piece>) this.values().stream()
+//                    .map(e -> (Piece) e)
+//                    .collect(Collectors.toList());
+
+//            List<String> oldPositionCoordinatesList = (List<String>) oldPosition.keySet().stream()
+//                    .map(e -> (String) e)
+//                    .collect(Collectors.toList());
+
+//----Old way----
+//            for (Piece oldPositionCoordinates : (List<Piece>)oldPosition.keySet()){
+//                if(!this.containsKey(oldPositionCoordinates) && !this.containsValue(oldPosition.get(oldPositionCoordinates))){
+//                    return false;
+//                }
+//            }
+//            return true;
