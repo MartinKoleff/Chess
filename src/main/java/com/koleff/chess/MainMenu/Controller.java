@@ -37,7 +37,7 @@ public class Controller {
     public void openChessBoard(ActionEvent actionEvent) {
         Parent chessBoardRoot = null;
         try {
-            chessBoardRoot = FXMLLoader.load(ChessBoardController.class.getResource("/com.koleff.chess/chessBoardMenu.fxml")); ///com.koleff.chess/
+            chessBoardRoot = FXMLLoader.load(ChessBoardController.class.getResource("/com.koleff.chess/chessBoardMenu.fxml"));
         } catch (IOException e) {
             e.printStackTrace();
         }

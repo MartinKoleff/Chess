@@ -2,7 +2,7 @@ package com.koleff.chess.Pieces;
 
 import java.io.Serializable;
 
-public abstract class Piece implements Serializable, Comparable{
+public abstract class Piece implements Serializable, Comparable {
     /**
      * Fields
      */
@@ -38,6 +38,7 @@ public abstract class Piece implements Serializable, Comparable{
     }
 
     public abstract Piece copy();
+
     public abstract void move();
 
     /**
@@ -59,6 +60,7 @@ public abstract class Piece implements Serializable, Comparable{
     public boolean getIsProtected() {
         return isProtected;
     }
+
     public void setIsProtected(boolean isProtected) {
         this.isProtected = isProtected;
     }
@@ -107,25 +109,25 @@ public abstract class Piece implements Serializable, Comparable{
 
     //Doesn't compare if the two pieces have moved
     @Override
-    public int compareTo(Object o){
+    public int compareTo(Object o) {
         Piece piece = (Piece) o;
 
-        if(this.getColor() == piece.getColor()
-        && this.getCoordinates().equals(piece.getCoordinates())
-        && this.getClass().getSimpleName().equals(piece.getClass().getSimpleName())){
-        return 1;
+        if (this.getColor() == piece.getColor()
+                && this.getCoordinates().equals(piece.getCoordinates())
+                && this.getClass().getSimpleName().equals(piece.getClass().getSimpleName())) {
+            return 1;
         }
 
         return 0;
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         return this.compareTo((Piece) o) == 1;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return this.getCoordinates() + " "
                 + this.getClass().getSimpleName() + " "
                 + this.getColor().toString() + " "

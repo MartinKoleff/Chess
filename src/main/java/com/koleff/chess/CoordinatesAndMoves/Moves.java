@@ -42,7 +42,7 @@ public class Moves implements Serializable {
             List<String> oldPositionCoordinatesList = new ArrayList<>(oldPosition.keySet());
             int counter = 0;
 
-            //Checks if all pieces from current position exist in the old position //FIND BETTER WAY...
+            //Checks if all pieces from current position exist in the old position
             for (Piece piece : currentPositionPiecesList){
                 for (String oldPositionCoordinates : oldPositionCoordinatesList) {
                     if (piece.equals(oldPosition.get(oldPositionCoordinates))){
@@ -86,7 +86,7 @@ public class Moves implements Serializable {
         return chessPiecesMap;
     }
 
-    public void setChessPiecesMap(LinkedHashMap<String, Piece> chessPiecesMap) {
+    public void setChessPiecesMap(HashMap<String, Piece> chessPiecesMap) {
         this.chessPiecesMap = chessPiecesMap;
     }
 
@@ -546,19 +546,3 @@ public class Moves implements Serializable {
         showLegalMove(coordinates);
     }
 }
-
-//            List<Piece> currentPositionPiecesList = (List<Piece>) this.values().stream()
-//                    .map(e -> (Piece) e)
-//                    .collect(Collectors.toList());
-
-//            List<String> oldPositionCoordinatesList = (List<String>) oldPosition.keySet().stream()
-//                    .map(e -> (String) e)
-//                    .collect(Collectors.toList());
-
-//----Old way----
-//            for (Piece oldPositionCoordinates : (List<Piece>)oldPosition.keySet()){
-//                if(!this.containsKey(oldPositionCoordinates) && !this.containsValue(oldPosition.get(oldPositionCoordinates))){
-//                    return false;
-//                }
-//            }
-//            return true;

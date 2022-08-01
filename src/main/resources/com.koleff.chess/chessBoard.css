@@ -1,9 +1,9 @@
 
 #black_rectangle{
-    -fx-background-color: Red;
+    -fx-background-color: #baca44;
 }
 #white_rectangle{
-    -fx-background-color: Blue;
+    -fx-background-color: #eeeed2;
 }
 
 #coordinates_label{

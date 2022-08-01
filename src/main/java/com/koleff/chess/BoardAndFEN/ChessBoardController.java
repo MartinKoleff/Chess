@@ -84,10 +84,11 @@ public class ChessBoardController implements Initializable {
         if (Controller.toLoadGame) {
             try {
                 serializationList = (List<Serializable>) SerializationManager.load("src/main/resources/com.koleff.chess/data.txt");
-                moves.setChessPiecesMap((LinkedHashMap<String, Piece>) serializationList.get(0));
+                moves.setChessPiecesMap((HashMap<String, Piece>) serializationList.get(0));
                 currentPlayer = (Player) serializationList.get(1);
 
                 clearSerializationFile();
+
                 //Add to allPositionsList all old positions...
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println("There was a problem with the deserialization of the file.");
@@ -100,7 +101,7 @@ public class ChessBoardController implements Initializable {
             clearSerializationFile();
             board.arrangeBoard();
 
-            allPositionsList.add(new HashMap<>(moves.getChessPiecesMap())); //default board position
+            allPositionsList.add(new HashMap<>(moves.getChessPiecesMap())); //Default board position
         }
         fenEditor.transformBoardToFEN();
         System.out.println(currentPlayer.getPlayerPiecesColor() + "'s Player Turn.");
@@ -426,57 +427,35 @@ public class ChessBoardController implements Initializable {
      *
      * @return true if a position is repeated 3 times
      */
-    private void checkForThreeMoveRepetitionStalemate() { //USE PREDICATE<Piece>...
+    private void checkForThreeMoveRepetitionStalemate() {
         int repetitionCounter = 1;
-        List<Pawn> oldPositionPawnsList;
 
         //Check all previous positions...
         for (HashMap oldPosition : allPositionsList) {
-
-            if(moves.getChessPiecesMap().equals(oldPosition)){ //Don't compare piece.hasMoved
+           if(moves.getChessPiecesMap().equals(oldPosition)){ //Don't compare piece.hasMoved
                 repetitionCounter++;
             }
 
-            if (repetitionCounter == 3) { //CHECK WHICH PLAYER IS STALEMATED...
+            if (repetitionCounter == 3) {
                 System.out.printf("%s player has been stalemated via 3 move repetition\n", nextTurnPlayer.getPlayerPiecesColor());
                 nextTurnPlayer.isStalemated = true;
                 return;
             }
         }
         allPositionsList.add(new HashMap<>(moves.getChessPiecesMap()));
-
     }
 }
-//BUG HERE... (3rd position with last one)
-//all maps that should return true with .equals() are the same
-//the problem is that newPiece.hasMoved != oldPiece.hasMoved
-//OVERRIDE .EQUALS() / COMPARABLE INTERFACE...
-
-//            else if(oldPosition.equals(moves.getChessPiecesMap())){ //If one of the old positions is the same as the current one
-//                repetitionCounter++;
-//            }
-//            else if(oldPosition.entrySet().stream()
-//                    .allMatch(e -> e.getValue().equals(moves.getChessPiecesMap().get(e.getKey())))){
-//            }
-//else if (Maps.difference(oldPosition, moves.getChessPiecesMap()).areEqual()) { //If one of the old positions is the same as the current one
-//                repetitionCounter++;
-//            }
-
-//--------------------
-//OPTIMIZING...
-//            oldPositionPawnsList = oldPosition.values().stream()
+//USED FOR OPTIMIZING...
+//        List<Pawn> oldPositionPawnsList;
+//   oldPositionPawnsList = oldPosition.values().stream()
 //                    .filter(e -> e instanceof Pawn)
-////                    .sorted() //BUG HERE...
 //                    .toList();
 //
-//            List currentPositionPawnsList = moves.getChessPiecesMap().values().stream()
+//            //Check all pawns (if at least 1 is different - reset)
+//            if (!oldPositionPawnsList.equals(moves.getChessPiecesMap().values().stream()
 //                    .filter(e -> e instanceof Pawn)
-////                    .sorted()
-//                    .toList();
-
-//BUG HERE... (try to sort the lists?)
-//            if (!oldPositionPawnsList.equals(currentPositionPawnsList)) { //If all pawns are the same as the current position (used for optimizing)
+//                    .toList())) { //If all pawns are the same as the current position (used for optimizing)
 //                allPositionsList.clear();
-//                allPositionsList.add(new LinkedHashMap<>(moves.getChessPiecesMap()));
+//                allPositionsList.add(moves.getChessPiecesMap());
 //                return;
-//            }
+//            } else
