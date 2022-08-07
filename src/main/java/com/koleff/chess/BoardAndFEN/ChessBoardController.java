@@ -12,6 +12,7 @@ import com.koleff.chess.SerializationManager.MapSerializationManager;
 import com.koleff.chess.SerializationManager.SerializationManager;
 import com.koleff.chess.Threads.PawnPromotionRunnable;
 import com.koleff.chess.Threads.PawnPromotionThread;
+import com.koleff.chess.Timer.Clock;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -78,6 +80,9 @@ public class ChessBoardController implements Initializable {
         fenEditor = new FENEditor();
         serializationList = new ArrayList<>();
         allPositionsList = new ArrayList<>();
+
+        whitePlayer.setClockTime(5);
+        blackPlayer.setClockTime(5);
 
 //        board.arrangeTestingBoard(); //Used for testing...
 
@@ -432,7 +437,7 @@ public class ChessBoardController implements Initializable {
 
         //Check all previous positions...
         for (HashMap oldPosition : allPositionsList) {
-           if(moves.getChessPiecesMap().equals(oldPosition)){ //Don't compare piece.hasMoved
+            if (moves.getChessPiecesMap().equals(oldPosition)) { //Don't compare piece.hasMoved
                 repetitionCounter++;
             }
 

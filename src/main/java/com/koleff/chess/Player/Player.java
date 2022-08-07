@@ -51,11 +51,20 @@ public class Player implements Serializable {
         return isPlayerTurn;
     }
 
+    public Clock getClock() {
+        return clock;
+    }
     /**
      * Setters
      */
     public void setPlayerTurn(boolean isPlayerTurn) {
         this.isPlayerTurn = isPlayerTurn;
+    }
+
+    public void setClockTime(int timeInMinutes) {
+        clock = new Clock(timeInMinutes * 60000000000L);
+
+        //Start clock after 1st turn of black player...
     }
 
     public Colour getPlayerPiecesColor() {
@@ -334,4 +343,6 @@ public class Player implements Serializable {
         }
         this.setEnPassantPawn(null);
     }
+
+
 }

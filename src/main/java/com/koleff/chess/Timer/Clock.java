@@ -8,26 +8,40 @@ import java.util.TimerTask;
  * Currently in development... (Coming soon)
  */
 public class Clock {
-    //    private long startTime;
-//    private long elapsedTime;
+    private long startTime;
+    private long elapsedTime;
     private long allowedTime;
 
-    public Stopwatch stopwatch;
-    public boolean isRunning;
+    private Stopwatch stopwatch;
 
     public Clock(long allowedTime) {
         this.allowedTime = allowedTime;
     }
 
     public void start() {
-        isRunning = true;
-//        startTime = System.currentTimeMillis();
+        if(startTime != 0L) {
+            startTime = System.currentTimeMillis();
+        }
+
+        //New thread to check if over allowed time???
         stopwatch.start();
     }
 
     public void pause() {
-        isRunning = false;
-//        elapsedTime = startTime - System.currentTimeMillis();
+        elapsedTime = startTime - System.currentTimeMillis();
         stopwatch.stop();
+    }
+
+    public long time(){
+        return startTime - System.currentTimeMillis();
+    }
+
+    public boolean isRunning(){
+        return stopwatch.isRunning();
+    }
+
+    @Override
+    public String toString(){
+        return "Elapsed time: " + time() + " nanoseconds.";
     }
 }
