@@ -24,21 +24,34 @@ import static com.koleff.chess.BoardAndFEN.ChessBoardController.currentPlayer;
  * Currently in development... (Coming soon)
  */
 public class Clock implements Serializable {
-//    private long startTime;
+    //    private long startTime;
 //    private long elapsedTime;
-    private long allowedTime;
+    private int[] allowedTime;
     private boolean isRunning;
     private Label playerLabel;
 
-    private Timeline timeline;
-    private LocalTime time = LocalTime.parse("00:00:00");
-    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss"); //Replace with hours, minutes and seconds (int variables)
+    private int hours = 0;
+    private int minutes = 0;
+    private int seconds = 0;
 
-    public Clock(long allowedTime, Label playerLabel) {
+    private Timeline timeline;
+    private LocalTime time;
+    //private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss"); //Replace with hours, minutes and seconds (int variables)
+
+    public Clock(Label playerLabel, int... allowedTime) {
         this.allowedTime = allowedTime;
         this.playerLabel = playerLabel;
 
-        timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> incrementTime()));
+        try{
+            seconds = allowedTime[0];
+            minutes = allowedTime[1];
+            hours = allowedTime[2];
+        }catch (IndexOutOfBoundsException e){
+
+        }
+
+        time = LocalTime.parse(String.format("%d:%d:%d", hours, minutes, seconds)); //when time is 1 digit -> exception...
+        timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> decreaseTime()));
         timeline.setCycleCount(Animation.INDEFINITE);
     }
 
@@ -53,26 +66,55 @@ public class Clock implements Serializable {
     public void pause() {
         isRunning = false;
 //        elapsedTime = startTime - System.currentTimeMillis();
-       timeline.pause();
+        timeline.pause();
     }
 
-    private void incrementTime() {
-        time = time.plusSeconds(1);
-        playerLabel.setText(time.format(dtf));
+    private void decreaseTime() {
+        time = time.minusSeconds(1);
+
+        if (seconds - 1 < 0) {
+            if (minutes - 1 < 0) {
+                if (hours - 1 < 0) {
+
+                } else {
+                hours--;
+                minutes = 60;
+                }
+            } else {
+                minutes--;
+                seconds = 60;
+            }
+        }else{
+            seconds--;
+        }
+        playerLabel.setText(String.format("%d:%d:%d", hours, minutes, seconds)); //time.format(dtf)
+        System.out.println(hours + ":" + minutes + ":" + seconds);
     }
 
     @FXML
     private void endTimer(ActionEvent event) {
         timeline.stop();
 //            startTimerButton.setDisable(false);
-        time = LocalTime.parse("00:00:00");
-        playerLabel.setText(time.format(dtf));
+        time = LocalTime.parse(String.format("%d:%d:%d", hours, minutes, seconds));
+        playerLabel.setText(String.format("%d:%d:%d", hours, minutes, seconds));
     }
 }
 
-//Check when it goes in...
-//    @Override
-//    public void initialize(URL url, ResourceBundle rb) {
-//        timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> incrementTime()));
-//        timeline.setCycleCount(Animation.INDEFINITE);
-//    }
+
+//  if(seconds + 1 == 60){
+//            if(minutes + 1 == 60){
+//                if(hours + 1 == 24){
+//                    hours = 0;
+//
+//                    //Game over?
+//                }else {
+//                    hours += 1;
+//                }
+//                minutes = 0;
+//            }else {
+//                minutes += 1;
+//            }
+//            seconds = 0;
+//        }else {
+//            seconds += 1;
+//        }

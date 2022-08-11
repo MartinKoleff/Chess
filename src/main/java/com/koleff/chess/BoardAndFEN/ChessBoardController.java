@@ -48,10 +48,14 @@ public class ChessBoardController implements Initializable {
     private BorderPane gameWindow;
 
     @FXML
-    private Label clockLabel;
+    private Label whitePlayerClockLabel;
+
+    @FXML
+    private Label blackPlayerClockLabel;
 
     public static final int CELL_WIDTH = chessBoardWidth / 8;
     public static final int CELL_HEIGHT = chessBoardHeight / 8;
+    private int currentTurn = 1;
 
     public static Player whitePlayer = new Player(Colour.WHITE);
     public static Player blackPlayer = new Player(Colour.BLACK);
@@ -100,6 +104,9 @@ public class ChessBoardController implements Initializable {
         } else {
             clearSerializationFile();
             board.arrangeBoard();
+
+            whitePlayer.setClock(whitePlayerClockLabel, 30, 5);
+            blackPlayer.setClock(blackPlayerClockLabel, 30, 5);
 
             allPositionsList.add(new HashMap<>(moves.getChessPiecesMap())); //Default board position
         }
@@ -223,7 +230,6 @@ public class ChessBoardController implements Initializable {
                 selectedPiece.setCoordinates(newCoordinates);
             }
 
-
             //If the enemy king is in check
             if (nextTurnPlayer.checkForKingChecks()) {
                 nextTurnPlayer.isInCheck = true;
@@ -247,6 +253,17 @@ public class ChessBoardController implements Initializable {
                 if (nextTurnPlayer.isStalemated) {
                     System.out.printf("%s's king is stalemated.\n", nextTurnPlayer.getPlayerPiecesColor());
                 }
+            }
+
+            //Updates turn
+            if(currentPlayer.getPlayerPiecesColor().equals(Colour.BLACK)){
+                currentTurn++;
+            }
+
+            //Updates clock
+            if(currentTurn > 1){
+                currentPlayer.getClock().pause();
+                nextTurnPlayer.getClock().start();
             }
 
             //Resetting protection of enemy pieces...

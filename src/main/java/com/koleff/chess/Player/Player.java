@@ -74,8 +74,8 @@ public class Player implements Serializable {
      * @param allowedTime - the time that each player has (in minutes)
      * @param clockLabel - the clock label of each player
      */
-    public void setClock(int allowedTime, Label clockLabel) {
-        clock = new Clock(allowedTime, clockLabel);
+    public void setClock(Label clockLabel, int... allowedTime) {
+        clock = new Clock(clockLabel, allowedTime);
     }
 
     public Clock getClock(){
