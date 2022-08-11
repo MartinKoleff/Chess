@@ -12,8 +12,12 @@
    <right>
       <AnchorPane prefHeight="1000.0" prefWidth="400.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="clockLabel" layoutX="142.0" layoutY="107.0"
-                   styleClass="Label" stylesheets="@chessBoard.css" text="00:00">
+            <Label fx:id="whitePlayerClockLabel" layoutX="31.0" layoutY="108.0" styleClass="Label" stylesheets="@chessBoard.css" text="00:00">
+               <font>
+                  <Font size="50.0" />
+               </font>
+            </Label>
+            <Label fx:id="blackPlayerClockLabel" layoutX="249.0" layoutY="108.0" styleClass="Label" stylesheets="@chessBoard.css" text="00:00">
                <font>
                   <Font size="50.0" />
                </font>

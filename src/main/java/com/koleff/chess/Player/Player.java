@@ -2,7 +2,9 @@ package com.koleff.chess.Player;
 
 import com.koleff.chess.Pieces.*;
 import com.koleff.chess.Timer.Clock;
+import javafx.scene.control.Label;
 
+import javax.swing.*;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,6 +68,19 @@ public class Player implements Serializable {
         this.playerPiecesColor = playerPiecesColor;
     }
 
+
+    /**
+     * Used to set up the clock
+     * @param allowedTime - the time that each player has (in minutes)
+     * @param clockLabel - the clock label of each player
+     */
+    public void setClock(int allowedTime, Label clockLabel) {
+        clock = new Clock(allowedTime, clockLabel);
+    }
+
+    public Clock getClock(){
+        return clock;
+    }
     /**
      * Adds a piece of the players color into the player pieces map
      *
@@ -334,4 +349,5 @@ public class Player implements Serializable {
         }
         this.setEnPassantPawn(null);
     }
+
 }
