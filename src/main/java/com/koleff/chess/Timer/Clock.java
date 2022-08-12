@@ -72,6 +72,11 @@ public class Clock implements Serializable {
     private void decreaseTime() {
         time = time.minusSeconds(1);
 
+        //time equals 0 check...
+//        if(){
+//
+//        }
+
         if (seconds - 1 < 0) {
             if (minutes - 1 < 0) {
                 if (hours - 1 < 0) {
