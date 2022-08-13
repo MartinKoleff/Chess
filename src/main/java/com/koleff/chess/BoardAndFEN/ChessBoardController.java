@@ -105,8 +105,8 @@ public class ChessBoardController implements Initializable {
             clearSerializationFile();
             board.arrangeBoard();
 
-            whitePlayer.setClock(whitePlayerClockLabel, 30, 5);
-            blackPlayer.setClock(blackPlayerClockLabel, 30, 5);
+            whitePlayer.setClock(whitePlayerClockLabel, 30);
+            blackPlayer.setClock(blackPlayerClockLabel, 30);
 
             allPositionsList.add(new HashMap<>(moves.getChessPiecesMap())); //Default board position
         }

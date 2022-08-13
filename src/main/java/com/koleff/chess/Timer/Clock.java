@@ -19,40 +19,67 @@ import java.util.ResourceBundle;
 import java.util.TimerTask;
 
 import static com.koleff.chess.BoardAndFEN.ChessBoardController.currentPlayer;
+import static com.koleff.chess.BoardAndFEN.ChessBoardController.nextTurnPlayer;
 
-/**
- * Currently in development... (Coming soon)
- */
 public class Clock implements Serializable {
     //    private long startTime;
 //    private long elapsedTime;
     private int[] allowedTime;
     private boolean isRunning;
-    private Label playerLabel;
+    private transient Label playerLabel;
 
     private int hours = 0;
     private int minutes = 0;
     private int seconds = 0;
 
-    private Timeline timeline;
+    private transient Timeline timeline;
     private LocalTime time;
-    //private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss"); //Replace with hours, minutes and seconds (int variables)
+    private transient DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss"); //Replace with hours, minutes and seconds (int variables)
 
     public Clock(Label playerLabel, int... allowedTime) {
         this.allowedTime = allowedTime;
         this.playerLabel = playerLabel;
 
-        try{
+        try {
             seconds = allowedTime[0];
             minutes = allowedTime[1];
             hours = allowedTime[2];
-        }catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException e) {
 
         }
-
-        time = LocalTime.parse(String.format("%d:%d:%d", hours, minutes, seconds)); //when time is 1 digit -> exception...
+        setTime();
         timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> decreaseTime()));
         timeline.setCycleCount(Animation.INDEFINITE);
+    }
+
+    /**
+     * First time setup
+     */
+    private void setTime() {
+        if (hours / 10 > 0) {
+            if (minutes / 10 > 0) {
+                if (seconds / 10 > 0) {
+                    time = LocalTime.parse(String.format("%d:%d:%d", hours, minutes, seconds));
+                    return;
+                }
+                time = LocalTime.parse(String.format("%d:%d:0%d", hours, minutes, seconds));
+                return;
+            }
+            time = LocalTime.parse(String.format("%d:0%d:0%d", hours, minutes, seconds));
+            return;
+        } else if (minutes / 10 > 0) {
+            if (seconds / 10 > 0) {
+                time = LocalTime.parse(String.format("0%d:%d:%d", hours, minutes, seconds));
+                return;
+            }
+            time = LocalTime.parse(String.format("0%d:%d:0%d", hours, minutes, seconds));
+            return;
+        } else if (seconds / 10 > 0) {
+            time = LocalTime.parse(String.format("0%d:0%d:%d", hours, minutes, seconds));
+            return;
+        } else {
+            time = LocalTime.parse(String.format("0%d:0%d:0%d", hours, minutes, seconds));
+        }
     }
 
     @FXML
@@ -72,28 +99,28 @@ public class Clock implements Serializable {
     private void decreaseTime() {
         time = time.minusSeconds(1);
 
-        //time equals 0 check...
-//        if(){
-//
-//        }
+        //Game over...
+        if (time.equals(LocalTime.parse("00:00:00"))) {
+            System.out.printf("Game over! Player %s wins!\n", nextTurnPlayer.getPlayerPiecesColor());
+            this.pause();
+        }
 
         if (seconds - 1 < 0) {
             if (minutes - 1 < 0) {
                 if (hours - 1 < 0) {
 
                 } else {
-                hours--;
-                minutes = 60;
+                    hours--;
+                    minutes = 60;
                 }
             } else {
                 minutes--;
                 seconds = 60;
             }
-        }else{
+        } else {
             seconds--;
         }
-        playerLabel.setText(String.format("%d:%d:%d", hours, minutes, seconds)); //time.format(dtf)
-        System.out.println(hours + ":" + minutes + ":" + seconds);
+        playerLabel.setText(time.format(dtf)); //String.format("%d:%d:%d", hours, minutes, seconds)
     }
 
     @FXML
@@ -101,25 +128,7 @@ public class Clock implements Serializable {
         timeline.stop();
 //            startTimerButton.setDisable(false);
         time = LocalTime.parse(String.format("%d:%d:%d", hours, minutes, seconds));
-        playerLabel.setText(String.format("%d:%d:%d", hours, minutes, seconds));
+        playerLabel.setText(time.format(dtf));
     }
 }
 
-
-//  if(seconds + 1 == 60){
-//            if(minutes + 1 == 60){
-//                if(hours + 1 == 24){
-//                    hours = 0;
-//
-//                    //Game over?
-//                }else {
-//                    hours += 1;
-//                }
-//                minutes = 0;
-//            }else {
-//                minutes += 1;
-//            }
-//            seconds = 0;
-//        }else {
-//            seconds += 1;
-//        }
