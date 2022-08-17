@@ -53,6 +53,14 @@ public class Player implements Serializable {
         return isPlayerTurn;
     }
 
+    public Clock getClock(){
+        return clock;
+    }
+
+    public Colour getPlayerPiecesColor() {
+        return playerPiecesColor;
+    }
+
     /**
      * Setters
      */
@@ -60,9 +68,6 @@ public class Player implements Serializable {
         this.isPlayerTurn = isPlayerTurn;
     }
 
-    public Colour getPlayerPiecesColor() {
-        return playerPiecesColor;
-    }
 
     public void setPlayerPiecesColor(Colour playerPiecesColor) {
         this.playerPiecesColor = playerPiecesColor;
@@ -78,9 +83,6 @@ public class Player implements Serializable {
         clock = new Clock(clockLabel, allowedTime);
     }
 
-    public Clock getClock(){
-        return clock;
-    }
     /**
      * Adds a piece of the players color into the player pieces map
      *
