@@ -1,3 +1,4 @@
 target
 .idea
 Chess.iml
+src/main/resources/com.koleff.chess/data.txt
